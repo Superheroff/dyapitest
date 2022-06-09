@@ -6,10 +6,9 @@ import random
 import hashlib
 
 class dyapi:
-    # 主
+
     host = 'https://api2.52jan.com'
-    # 备
-    # host = 'https://api.app966.cn'
+
 
 
 
