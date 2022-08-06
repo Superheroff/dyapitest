@@ -6,11 +6,10 @@ import random
 import hashlib
 
 class dyapi:
-
+    # 主
     host = 'https://api2.52jan.com'
-
-
-
+    # 备
+    # host = 'https://live.52jan.com' # 限
 
     COMMON_DEVICE_PARAMS = {
         'address_book_access': '2',
@@ -71,10 +70,39 @@ class dyapi:
     }
 
     def get_appkey(self):
+        """
+        这是本api的加密
+        :return:
+        """
         # 获取appkey
         data = self.cid + '5c6b8r9a'
         self.__appkey = hashlib.sha256(data.encode('utf-8')).hexdigest()
         print('appkey', self.__appkey)
+
+
+    def get_web_xbogus(self, url, ua):
+        """
+        获取web xbogus
+        :param url:
+        :param ua:
+        :return:
+        """
+        sign_url = dyapi.host + '/dyapi/web/xbogus'
+        ts = str(time.time()).split('.')[0]
+        header = {
+            'cid': self.cid,
+            'timestamp': ts,
+            'user-agent': 'okhttp/3.10.0.12'
+        }
+        sign = self.set_sign()
+        params = {
+            'url': url,
+            'ua': ua,
+            'sign': sign
+        }
+        resp = requests.post(sign_url, data=params, headers=header).json()
+        print('web_xbogus', resp)
+        return resp
 
     def get_web_sign(self, url, referer, ua):
         """
@@ -132,10 +160,11 @@ class dyapi:
     def get_ApiInfo(self):
         """
         获取接口使用情况
+        minCount 当前用了多少
+        maxCount 你可以用的最大值
         :return:
         """
         url = dyapi.host + '/end_time'
-        print(url)
         resp = requests.post(url, data={'cid': self.cid, 'api': 'dyapi'}).text
         return resp
 
@@ -657,7 +686,7 @@ class dyapi:
         :param room_id:直播间ID
         :return:
         """
-        url = 'https://live.52jan.com/dyapi/live_barrage/v2'
+        url = dyapi.host + '/dyapi/live_barrage/v2'
         ts = str(time.time()).split('.')[0]
         header = {
             'cid': self.cid,
@@ -713,20 +742,20 @@ class dyapi:
         :param page:
         :return:
         """
-        url = 'https://www.douyin.com/aweme/v1/web/comment/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&aweme_id=' + vid + '&' \
-              'cursor=' + str(page) + '&count=20&version_code=160100&version_name=16.1.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&' \
-              'browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F' \
-              '75.0.3770.142+Safari%2F537.36&browser_online=true'
-        sign = self.get_web_sign(url, 'https://www.douyin.com/video/' + vid + '?previous_page=main_page', self.__web_ua)
-        url = url + '&_signature=' + sign['sign']
+        url = 'https://www.douyin.com/aweme/v1/web/comment/list/?device_platform=webapp&aid=6383&channel' \
+              '=channel_pc_web&aweme_id={0}&cursor={1}&count=20&item_type=0&insert_ids=&rcFT=AAM4H_ZlA' \
+              '&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=2560&screen_height=1707' \
+              '&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=103.0.0.0' \
+              '&browser_online=true&engine_name=Blink&engine_version=103.0.0.0&os_name=Windows&os_version=10' \
+              '&cpu_core_num=8&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=100&webid' \
+              '=&msToken='.format(vid, page)
+
+        sign = self.get_web_sign(url, 'https://www.douyin.com/', self.__web_ua)
+        xbogus = self.get_web_xbogus(url, self.__web_ua)
+        url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
-            'Cookie': 'passport_auth_status_ss=d345a1fe9498e99aaae8772c4411a6ac%2C; sid_guard=5029a6aab0d1c73a76bd8904562c3d6f%7C1640241717%7C5184000%7CMon%2C+21-Feb-2022+06%3A41%3A57+GMT; uid_tt=e5b46693845811ea6961be4bbb581ef5; uid_tt_ss=e5b46693845811ea6961be4bbb581ef5; sid_tt=5029a6aab0d1c73a76bd8904562c3d6f;'
-                      ' sessionid=5029a6aab0d1c73a76bd8904562c3d6f; sessionid_ss=5029a6aab0d1c73a76bd8904562c3d6f; sid_ucp_v1=1.0.0-KDBhMmI5MTI3YTc2MzZlMmE2ZDI1MDgwNjQzMDQzNzJmM2YwOTU2MTQKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJscSIgNTAyOWE2YWFiMGQxYzczYTc2YmQ4OTA0NTYyYzNkNmY; ssid_ucp_v1=1.0.0-KDBhMmI5MTI3YTc2MzZlMmE2ZDI1'
-                      'MDgwNjQzMDQzNzJmM2YwOTU2MTQKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJscSIgNTAyOWE2YWFiMGQxYzczYTc2YmQ4OTA0NTYyYzNkNmY; passport_auth_status=d345a1fe9498e99aaae8772c4411a6ac%2C; MONITOR_WEB_ID=a3043f91-cedf-4682-80b2-922f661e7d27; sso_uid_tt=688f7b503a73fa2ccda15a39cf344910; sso_uid_tt_ss=688f7b503a73fa2c'
-                      'cda15a39cf344910; toutiao_sso_user=a652c7ab28cfd5529c9cfcfed5b8435f; toutiao_sso_user_ss=a652c7ab28cfd5529c9cfcfed5b8435f; sid_ucp_sso_v1=1.0.0-KDdhNmE3MWRjY2ViZTRiMWNlMTJjN2QyYzI1M2M1NWRmYTY5YTU0ODUKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJsZiIgYTY1MmM3YWIyOGNmZDU1MjljOWNmY2ZlZDViODQzNWY; ssid_ucp_sso_v1=1'
-                      '.0.0-KDdhNmE3MWRjY2ViZTRiMWNlMTJjN2QyYzI1M2M1NWRmYTY5YTU0ODUKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJsZiIgYTY1MmM3YWIyOGNmZDU1MjljOWNmY2ZlZDViODQzNWY; n_mh=lIE_aX9LSJUND6iLw_hHl7uvVSs4g-GUPXO6aWyQCL0; msToken=iC10vixO8xiqyytWVnHo3a7JKKyldHHVl25AcRHyVknIW9wQt_1R3_8y6lKMwkaR-6IkXF9AZaPf3QwEdpUGRWQPfJynl57SXZ9ilY'
-                      'vjTM91_dKw2cp76A==; passport_csrf_token_default=41023a9541b61ae05c84ca351a7fbf5c; passport_csrf_token=41023a9541b61ae05c84ca351a7fbf5c; ' + cookie
+            'Cookie': ''
         }
         resp = requests.get(url, headers=header).text
         print('web评论列表：', resp)
@@ -823,7 +852,8 @@ class dyapi:
               'F537.36&browser_online=true'
 
         sign = self.get_web_sign(url, 'https://www.douyin.com/user/' + sec_uid, self.__web_ua)
-        url = url + '&_signature=' + sign['sign']
+        xbogus = self.get_web_xbogus(url, self.__web_ua)
+        url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
             'referer': 'https://www.douyin.com/user/' + sec_uid
@@ -907,13 +937,13 @@ class dyapi:
 
     def set_sign(self):
         """
-        计算签名
+        计算本api签名
         :return:
         """
         ts = str(time.time()).split('.')[0]
         string = '1005' + self.cid + ts + self.__appkey
         sign = hashlib.md5(string.encode('utf8')).hexdigest()
-        print('sign', sign)
+        print('本api的sign', sign)
         return sign
 
     def get_dy_userinfo(self, uid, token='', cookie=''):
@@ -934,12 +964,23 @@ class dyapi:
         print('dy_userinfo:', resp)
         return resp
 
-
-
+    def get_qishui(self):
+        url = 'https://beta-luna.douyin.com/luna/feed/playlist-square?request_tag_from=lynx&device_platform=android&os=android&ssmix=a&_rticket=1659112744687&cdid=4a6a891c-e1e1-4fec-8ef6-94f28a302b0b&channel=xiaomi_8478&aid=8478&app_name=luna&version_code=10090140&version_name=1.9.1&manifest_version_code=10090140&update_version_code=10090140&resolution=1080*2030&dpi=440&device_type=MI+6X&device_brand=xiaomi&language=zh&os_api=28&os_version=9&ac=wifi&package=com.luna.music&hybrid_version_code=10090140&device_model=MI+6X&tz_name=Asia%2FShanghai&tz_offset=28800&network_speed=5246&iid=3927929059029550&device_id=57321576469'
+        sig = self.get_xgorgon(url, '', '', '')
+        header = {
+            'User-Agent': 'com.luna.music/10090140 (Linux; U; Android 9; zh_CN; MI 6X; Build/PKQ1.180904.001; Cronet/TTNetVersion:88c528f4 2021-08-04 QuicVersion:6ad2ee95 2021-04-06)',
+            'X-SS-REQ-TICKET': str(time.time() * 1000).split(".")[0],
+            'X-SS-DP': '1128',
+            'sdk-version': '2',
+            'X-Gorgon': sig['xgorgon'],
+            'X-Khronos': sig['xkhronos'],
+            'passport-sdk-version': '30759',
+        }
+        resp = requests.post(url, data={'category_id': 0}, headers=header).text
+        print('汽水音乐：' + resp)
+        return resp
 
 if __name__ == '__main__':
-
-
 
     api = dyapi('d9ba8ae07d955b83c3b04280f3dc5a4a')
     api.get_appkey()
@@ -947,11 +988,8 @@ if __name__ == '__main__':
     ApiInfo = api.get_ApiInfo()
     print('到期时间:' + ApiInfo)
 
-
     # app取服务器提前生成好的设备号
     device = api.get_device()
-
-
 
     # web版获取cookie
     cookie = api.get_web_cookie()
@@ -961,20 +999,37 @@ if __name__ == '__main__':
     page = 0
 
     token = '00470bbfeb49d95c2ca1e26ac4a1dd510f0384dbdf2f3665dd4bd0714bd8a76157a7058d65daa90d26694f0d385459aa4ab5929223fadc1d5d4c6eaec97cb70c4ede68a69a8853fa2a41b7018eedde0ec5ddd920f0d3e174de2cdccc94b4cfd0e140b-1.0.1'
+    # api.get_qishui()
 
     # 获取粉丝列表示例
-    # api.api_get_follow('100698990140', '0', '')
     # api.get_follow('100698990140', page, 20, token, True)
 
     # 获取关注列表示例
-    # api.api_get_follow('100698990140', '0', '1')
     # api.get_follow('100698990140', page, 20, token, False)
 
     # 获取用户信息
     # api.get_userinfo('100698990140')
 
-    # 获取直播弹幕get_live_barrage
-    api.get_live_barrage('7104989010182867716', iid=device['data'][0]['install_id'], device_id=device['data'][0]['device_id'])
+    # xbogus测试获取作品列表
+    api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
+
+    # 获取直播弹幕
+    cursor = ''
+    internalExt = ''
+    room_id = '7128406895521499934'
+    for i in range(3):
+        ret = api.get_live_barrage(room_id=room_id, iid=device['data'][0]['install_id'], device_id=device['data'][0]['device_id'], cursor=cursor, internal_ext=internalExt)
+        res = json.loads(ret)
+        try:
+            cursor = res['cursor']
+            internalExt = res['internalExt']
+            if i >= 2:
+                print("正在直播：" + cursor)
+        except KeyError:
+            print("下播了去别处看看吧")
+            break
+        time.sleep(3)
+
 
     # 获取直播间观众
     # api.get_ranklist('7070656837364173598')
@@ -1032,6 +1087,3 @@ if __name__ == '__main__':
 
     # 通过uid获取用户信息
     api.get_dy_userinfo('94409926892', token)
-
-
-
