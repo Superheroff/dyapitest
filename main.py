@@ -36,7 +36,7 @@ class dyapi:
         'cpu_support64': 'false'
     }
 
-    proxies = {'https': 'https://togk71z9.xiaomy.net:44510'}
+    proxies = {'https': '127.0.0.1::7890'}
 
     def __init__(self, cid):
         self.cid = cid
