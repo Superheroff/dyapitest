@@ -8,8 +8,8 @@ import hashlib
 class dyapi:
     # 主
     host = 'https://api2.52jan.com'
-    # 备
-    # host = 'https://live.52jan.com' # 限
+    # 直播专用
+    # host = 'https://live.52jan.com'
 
     COMMON_DEVICE_PARAMS = {
         'address_book_access': '2',
@@ -1012,13 +1012,14 @@ if __name__ == '__main__':
 
     # xbogus测试获取作品列表
     api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
-
+    
+    
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    room_id = '7128406895521499934'
+    room_id = '7156069677498665764'
     for i in range(3):
-        ret = api.get_live_barrage(room_id=room_id, iid=device['data'][0]['install_id'], device_id=device['data'][0]['device_id'], cursor=cursor, internal_ext=internalExt)
+        ret = api.get_live_barrage(room_id=room_id, cursor=cursor, internal_ext=internalExt)
         res = json.loads(ret)
         try:
             cursor = res['cursor']
