@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import json
 import time
@@ -5,10 +6,17 @@ from urllib.parse import urlencode
 import random
 import hashlib
 
+
+def get_str_btw(s, f, b):
+    # 取文本中间
+    par = s.partition(f)
+    return (par[2].partition(b))[0][:]
+
+
 class dyapi:
     # 主
     host = 'https://api2.52jan.com'
-    # 直播专用
+    # 备
     # host = 'https://live.52jan.com'
 
     COMMON_DEVICE_PARAMS = {
@@ -36,7 +44,7 @@ class dyapi:
         'cpu_support64': 'false'
     }
 
-    proxies = {'https': '127.0.0.1::7890'}
+    proxies = {'https': 'https://togk71z9.xiaomy.net:44510'}
 
     def __init__(self, cid):
         self.cid = cid
@@ -67,7 +75,7 @@ class dyapi:
             'language': 'zh',
             'device_brand': 'Android',
             'mcc_mnc': '46007'
-    }
+        }
 
     def get_appkey(self):
         """
@@ -78,7 +86,6 @@ class dyapi:
         data = self.cid + '5c6b8r9a'
         self.__appkey = hashlib.sha256(data.encode('utf-8')).hexdigest()
         print('appkey', self.__appkey)
-
 
     def get_web_xbogus(self, url, ua):
         """
@@ -276,7 +283,6 @@ class dyapi:
         print('用户粉丝/关注列表', resp)
         return resp
 
-
     def get_user_search(self, keyword, page, token):
         """
         获取用户搜索列表(抖音极速版)
@@ -320,8 +326,6 @@ class dyapi:
         print('用户搜索列表：' + resp)
         return resp
 
-
-
     def get_video_search(self, keyword, page, token):
         """
         获取视频搜索列表(抖音极速版)
@@ -354,7 +358,7 @@ class dyapi:
 
         }
 
-        n = random.randint(0,len(device['data'][0]['uuid'])-1)
+        n = random.randint(0, len(device['data'][0]['uuid']) - 1)
 
         self.__params.update({'uuid': device['data'][0]['uuid'][n]})
         self.__params.update({'device_id': device['data'][0]['device_id'][n]})
@@ -377,7 +381,6 @@ class dyapi:
         resp = requests.post(url, data=params, headers=header).text
         print('视频搜索列表：' + resp)
         return resp
-
 
     def get_userinfo(self, uid):
         """
@@ -414,15 +417,24 @@ class dyapi:
         :param page: 首页为0，下一页为本次请求返回的max_cursor
         :return:
         """
-        url = 'https://api3-normal-c-lq.amemv.com/aweme/v1/favorite/list/?item_id='+vid+'&item_type=0&max_cursor='+str(page)+'&min_cursor='+str(pg)+'&count=30&' \
-              'insert_ids&address_book_access=2&hotsoon_filtered_count=0&hotsoon_has_more=0&aweme_filtered_count=2&os_api=22&device_type='+device['data'][0]['device_type']+'&ssmix=a&manifest_version_code=150801&' \
-              'dpi=240&uuid='+device['data'][0]['uuid']+'&app_name=aweme&version_name=15.8.0&ts='+str(time.time())+'&cpu_support64=false&storage_type=0&app_type=normal&ac=wifi&host_abi=armeabi-v7' \
-              'a&update_version_code=15809900&channel=aweGW&_rticket='+str(time.time() * 1000).split(".")[0]+'&device_platform=android&iid='+device['data'][0]['install_id']+'&version_code=150800&' \
-              'mac_address='+device['data'][0]['mac']+'&cdid='+device['data'][0]['cdid']+'&openudid='+device['data'][0]['openudid']+'&device_id='+device['data'][0]['device_id']+'&resolution=720*1280&os_version=5.1.1&language=zh&device_brand' \
-              '='+device['data'][0]['device_brand']+'&aid=1128&mcc_mnc=46007'
+        url = 'https://api3-normal-c-lq.amemv.com/aweme/v1/favorite/list/?item_id=' + vid + '&item_type=0&max_cursor=' + str(
+            page) + '&min_cursor=' + str(pg) + '&count=30&' \
+                                               'insert_ids&address_book_access=2&hotsoon_filtered_count=0&hotsoon_has_more=0&aweme_filtered_count=2&os_api=22&device_type=' + \
+              device['data'][0]['device_type'] + '&ssmix=a&manifest_version_code=150801&' \
+                                                 'dpi=240&uuid=' + device['data'][0][
+                  'uuid'] + '&app_name=aweme&version_name=15.8.0&ts=' + str(
+            time.time()) + '&cpu_support64=false&storage_type=0&app_type=normal&ac=wifi&host_abi=armeabi-v7' \
+                           'a&update_version_code=15809900&channel=aweGW&_rticket=' + \
+              str(time.time() * 1000).split(".")[0] + '&device_platform=android&iid=' + device['data'][0][
+                  'install_id'] + '&version_code=150800&' \
+                                  'mac_address=' + device['data'][0]['mac'] + '&cdid=' + device['data'][0][
+                  'cdid'] + '&openudid=' + device['data'][0]['openudid'] + '&device_id=' + device['data'][0][
+                  'device_id'] + '&resolution=720*1280&os_version=5.1.1&language=zh&device_brand' \
+                                 '=' + device['data'][0]['device_brand'] + '&aid=1128&mcc_mnc=46007'
         sig = self.get_xgorgon(url, '', '', '')
         header = {
-            'User-Agent': 'com.ss.android.ugc.aweme/150801 (Linux; U; Android 5.1.1; zh_CN; '+device['data'][0]['device_type']+'; Build/NMF26X; Cronet/TTNetVersion:71e8fd11 2020-06-10 QuicVersion:7aee791b 2020-06-05',
+            'User-Agent': 'com.ss.android.ugc.aweme/150801 (Linux; U; Android 5.1.1; zh_CN; ' + device['data'][0][
+                'device_type'] + '; Build/NMF26X; Cronet/TTNetVersion:71e8fd11 2020-06-10 QuicVersion:7aee791b 2020-06-05',
             'X-SS-REQ-TICKET': str(time.time() * 1000).split(".")[0],
             'X-SS-DP': '1128',
             'sdk-version': '2',
@@ -435,7 +447,6 @@ class dyapi:
         resp = requests.get(url, headers=header).text
         print('获取作品点赞：' + resp)
         return resp
-
 
     def get_video(self, uid, page, token):
         """
@@ -478,14 +489,22 @@ class dyapi:
         :return:
         """
         n = str(random.randint(0, 9))
-        url = 'https://api3-normal-c-hl.amemv.com/aweme/v2/comment/list/?address_book_access=1&client_niu_ready=false&os_api=22&device_type=MI%25209&ssmix=a&manifest_version_code=120'+n+'00&dpi=240&app_name=douyin_lite&' \
-              'version_name=12.'+n+'.0&ts='+str(time.time()).split(".")[0]+'&app_type=normal&ac=wifi&update_version_code=12'+n+'09900&channel='+self.re_channel()+'&_rticket='+str(time.time() * 1000).split(".")[0]+'&device_platform=android&tool_grey_user=0&version_code=120'+n+'00&' \
-              'resolution=720%2A1280&os_version=5.1.1&language=zh&device_brand=Android&mcc_mnc=46007&cursor='+str(page)+'&cdid='+device['data'][0]['cdid']+'&count=20' \
-              '&aweme_id='+vid+'&uuid='+device['data'][0]['uuid']+'&device_id='+device['data'][0]['device_id']+'&iid='+device['data'][0]['install_id']+'&openudid='+device['data'][0]['openudid']+'&mac_address='+device['data'][0]['mac']+'&aid=2329'
+        url = 'https://api3-normal-c-hl.amemv.com/aweme/v2/comment/list/?address_book_access=1&client_niu_ready=false&os_api=22&device_type=MI%25209&ssmix=a&manifest_version_code=120' + n + '00&dpi=240&app_name=douyin_lite&' \
+                                                                                                                                                                                              'version_name=12.' + n + '.0&ts=' + \
+              str(time.time()).split(".")[
+                  0] + '&app_type=normal&ac=wifi&update_version_code=12' + n + '09900&channel=' + self.re_channel() + '&_rticket=' + \
+              str(time.time() * 1000).split(".")[
+                  0] + '&device_platform=android&tool_grey_user=0&version_code=120' + n + '00&' \
+                                                                                          'resolution=720%2A1280&os_version=5.1.1&language=zh&device_brand=Android&mcc_mnc=46007&cursor=' + str(
+            page) + '&cdid=' + device['data'][0]['cdid'] + '&count=20' \
+                                                           '&aweme_id=' + vid + '&uuid=' + device['data'][0][
+                  'uuid'] + '&device_id=' + device['data'][0]['device_id'] + '&iid=' + device['data'][0][
+                  'install_id'] + '&openudid=' + device['data'][0]['openudid'] + '&mac_address=' + device['data'][0][
+                  'mac'] + '&aid=2329'
 
         sig = self.get_xgorgon(url, '', '', '0408')
         header = {
-            'User-Agent': 'com.ss.android.ugc.aweme.lite/120'+n+'00 (Linux; U; Android 5.1.1; zh_CN; TAS-AN00; Build/TAS-AN00; Cronet/TTNetVersion:414feb46 2020-09-08 QuicVersion:7aee791b 2020-06-05)',
+            'User-Agent': 'com.ss.android.ugc.aweme.lite/120' + n + '00 (Linux; U; Android 5.1.1; zh_CN; TAS-AN00; Build/TAS-AN00; Cronet/TTNetVersion:414feb46 2020-09-08 QuicVersion:7aee791b 2020-06-05)',
             'X-SS-REQ-TICKET': sig['X-SS-REQ-TICKET'],
             'X-SS-DP': '2329',
             'sdk-version': '2',
@@ -524,7 +543,6 @@ class dyapi:
         resp = requests.post(url, data=data, headers=header).text
         print('app评论列表：' + resp)
         return resp
-
 
     def api_get_follow(self, uid, page, ty=''):
         '''
@@ -587,7 +605,6 @@ class dyapi:
         print('带货口碑：' + resp)
         return resp
 
-
     def get_shop_product(self, uid, page, token):
         """
         获取橱窗列表
@@ -629,10 +646,16 @@ class dyapi:
         :return:
         """
 
-        url = 'https://lianmengapi-lf.snssdk.com/live/promotions/?author_id='+uid+'&sec_author_id=&room_id='+room_id+'&entrance_info=&first_enter=false&auto_apply_coupon=false&manifest_version_code=130801&_rticket='+str(time.time() * 1000).split(".")[0]+'&app_type=norma' \
-                'l&iid='+device['data'][0]['install_id']+'&channel=wandoujia_1128_1130&device_type=MI+6X&language=zh&cpu_support64=true&host_abi=armeabi-v7a&uuid='+device['data'][0]['uuid']+'&resolution=1080*2030&openudid' \
-                 '='+device['data'][0]['openudid']+'&update_version_code=13809900&cdid='+device['data'][0]['cdid']+'&appTheme=dark&os_api=28&dpi=440&ac=wifi&device_id='+device['data'][0]['device_id']+'&os_versi' \
-                 'on=9&version_code=130800&app_name=aweme&version_name=13.8.0&device_brand=xiaomi&ssmix=a&device_platform=android&aid=1128&ts='+str(time.time())
+        url = 'https://lianmengapi-lf.snssdk.com/live/promotions/?author_id=' + uid + '&sec_author_id=&room_id=' + room_id + '&entrance_info=&first_enter=false&auto_apply_coupon=false&manifest_version_code=130801&_rticket=' + \
+              str(time.time() * 1000).split(".")[0] + '&app_type=norma' \
+                                                      'l&iid=' + device['data'][0][
+                  'install_id'] + '&channel=wandoujia_1128_1130&device_type=MI+6X&language=zh&cpu_support64=true&host_abi=armeabi-v7a&uuid=' + \
+              device['data'][0]['uuid'] + '&resolution=1080*2030&openudid' \
+                                          '=' + device['data'][0]['openudid'] + '&update_version_code=13809900&cdid=' + \
+              device['data'][0]['cdid'] + '&appTheme=dark&os_api=28&dpi=440&ac=wifi&device_id=' + device['data'][0][
+                  'device_id'] + '&os_versi' \
+                                 'on=9&version_code=130800&app_name=aweme&version_name=13.8.0&device_brand=xiaomi&ssmix=a&device_platform=android&aid=1128&ts=' + str(
+            time.time())
         sig = self.get_xgorgon(url, '', '', '')
         header = {
             'User-Agent': 'com.ss.android.ugc.aweme/130801 (Linux; U; Android 9; zh_CN; MI 6X; Build/PKQ1.180904.001; Cronet/TTNetVersion:58eeeb7f 2020-11-03 QuicVersion:47946d2a 2020-10-14)',
@@ -648,7 +671,6 @@ class dyapi:
         print('直播间商品列表：' + resp)
         return resp
 
-
     def get_shop_ranklist(self, sec_uid, room_id, token):
         """
         获取带货榜
@@ -657,12 +679,18 @@ class dyapi:
         :return:
         """
 
-        url = 'https://webcast5-normal-c-lf.amemv.com/webcast/ranklist/hour/?room_id='+room_id+'&sec_anchor_id='+sec_uid+'&hour_info=0&' \
-              'sec_user_id=&style=3&rank_type=31&webcast_sdk_version=1790&webcast_language=zh&webcast_locale=zh_CN' \
-              '&webcast_gps_access=1&current_network_quality_info=&manifest_version_code=130801&_rticket='+str(time.time() * 1000).split(".")[0]+'&app_type=' \
-              'normal&iid='+device['data'][0]['install_id']+'&channel=wandoujia_1128_1130&device_type=MI+6X&language=zh&cpu_support64=true&host_abi=armeabi-v7a&uuid='+device['data'][0]['uuid']+'&resolution=1080*2030&openudid='+device['data'][0]['openudid']+'&upda' \
-              'te_version_code=13809900&cdid='+device['data'][0]['cdid']+'&appTheme=dark&os_api=28&dpi=440&ac=wifi&device_id='+device['data'][0]['device_id']+'&os_version=9&version_code=130800&app_name=aweme&versio' \
-              'n_name=13.8.0&device_brand=xiaomi&ssmix=a&device_platform=android&aid=1128&ts='+str(time.time())
+        url = 'https://webcast5-normal-c-lf.amemv.com/webcast/ranklist/hour/?room_id=' + room_id + '&sec_anchor_id=' + sec_uid + '&hour_info=0&' \
+                                                                                                                                 'sec_user_id=&style=3&rank_type=31&webcast_sdk_version=1790&webcast_language=zh&webcast_locale=zh_CN' \
+                                                                                                                                 '&webcast_gps_access=1&current_network_quality_info=&manifest_version_code=130801&_rticket=' + \
+              str(time.time() * 1000).split(".")[0] + '&app_type=' \
+                                                      'normal&iid=' + device['data'][0][
+                  'install_id'] + '&channel=wandoujia_1128_1130&device_type=MI+6X&language=zh&cpu_support64=true&host_abi=armeabi-v7a&uuid=' + \
+              device['data'][0]['uuid'] + '&resolution=1080*2030&openudid=' + device['data'][0]['openudid'] + '&upda' \
+                                                                                                              'te_version_code=13809900&cdid=' + \
+              device['data'][0]['cdid'] + '&appTheme=dark&os_api=28&dpi=440&ac=wifi&device_id=' + device['data'][0][
+                  'device_id'] + '&os_version=9&version_code=130800&app_name=aweme&versio' \
+                                 'n_name=13.8.0&device_brand=xiaomi&ssmix=a&device_platform=android&aid=1128&ts=' + str(
+            time.time())
         sig = self.get_xgorgon(url, '', '', '')
         header = {
             'User-Agent': 'com.ss.android.ugc.aweme/130801 (Linux; U; Android 9; zh_CN; MI 6X; Build/PKQ1.180904.001; Cronet/TTNetVersion:58eeeb7f 2020-11-03 QuicVersion:47946d2a 2020-10-14)',
@@ -677,8 +705,6 @@ class dyapi:
         resp = requests.get(url, headers=header).text
         print('直播带货榜列表：' + resp)
         return resp
-
-
 
     def get_live_barrage(self, room_id, cursor='', internal_ext='', iid='', device_id=''):
         """
@@ -699,14 +725,13 @@ class dyapi:
             "room_id": room_id,
             "cursor": cursor,
             "internal_ext": internal_ext,
-            "device_id": device_id,
-            "iid": iid
+            # "device_id": device_id,
+            # "iid": iid
         }
 
         resp = requests.post(url, data=data, headers=header).text
         print('直播弹幕：' + resp)
         return resp
-
 
     def re_channel(self):
         channel = ['wandoujia_aweme_feisuo', 'wandoujia_aweme2', 'tengxun_new', 'douyinw', 'douyin_tengxun_wzl',
@@ -721,10 +746,11 @@ class dyapi:
         :return:
         """
         url = 'https://www.douyin.com/aweme/v1/web/aweme/detail/?device_platform=webapp&aid=6383&channel=channel_pc_web&aweme_id=' + vid + '&' \
-              'version_code=160100&version_name=16.1.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32&' \
-              'browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F75.0.3770.142+Safari%2F537.36&browser_online=true'
+                                                                                                                                           'version_code=160100&version_name=16.1.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32&' \
+                                                                                                                                           'browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F75.0.3770.142+Safari%2F537.36&browser_online=true'
 
-        sign = self.get_web_sign(url, 'https://www.douyin.com/video/' + vid + '?previous_page=video_detail', self.__web_ua)
+        sign = self.get_web_sign(url, 'https://www.douyin.com/video/' + vid + '?previous_page=video_detail',
+                                 self.__web_ua)
         url = url + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
@@ -733,7 +759,6 @@ class dyapi:
         resp = requests.get(url, headers=header, cookies=self.get_cookie()).text
         print('web版视频信息：', resp)
         return resp
-
 
     def get_web_comment(self, vid, page):
         """
@@ -770,9 +795,10 @@ class dyapi:
         """
 
         url = 'https://www.douyin.com/aweme/v1/web/user/follower/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id=MS4wLjABAAAAgrpcoLYJIncK6LCPT4A1bDEW2oM12j-PWDvPIWHL7ls&offset=0&min_time=0&max_time=' + page + '&count=20&source_type=' \
-              '1&gps_access=0&address_book_access=0&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=3840&screen_height=2560&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=86.0.4240.198&browser_online=true&engine_name=Bl' \
-              'ink&engine_version=86.0.4240.198&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50'
-        sign = self.get_web_sign(url, 'https://www.douyin.com/user/' + sec_uid + '?previous_page=app_code_link', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36')
+                                                                                                                                                                                                                                          '1&gps_access=0&address_book_access=0&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=3840&screen_height=2560&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=86.0.4240.198&browser_online=true&engine_name=Bl' \
+                                                                                                                                                                                                                                          'ink&engine_version=86.0.4240.198&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50'
+        sign = self.get_web_sign(url, 'https://www.douyin.com/user/' + sec_uid + '?previous_page=app_code_link',
+                                 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36')
         url = url + '&_signature=' + sign['sign']
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
@@ -783,7 +809,8 @@ class dyapi:
                       'MDgwNjQzMDQzNzJmM2YwOTU2MTQKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJscSIgNTAyOWE2YWFiMGQxYzczYTc2YmQ4OTA0NTYyYzNkNmY; passport_auth_status=d345a1fe9498e99aaae8772c4411a6ac%2C; MONITOR_WEB_ID=a3043f91-cedf-4682-80b2-922f661e7d27; sso_uid_tt=688f7b503a73fa2ccda15a39cf344910; sso_uid_tt_ss=688f7b503a73fa2c'
                       'cda15a39cf344910; toutiao_sso_user=a652c7ab28cfd5529c9cfcfed5b8435f; toutiao_sso_user_ss=a652c7ab28cfd5529c9cfcfed5b8435f; sid_ucp_sso_v1=1.0.0-KDdhNmE3MWRjY2ViZTRiMWNlMTJjN2QyYzI1M2M1NWRmYTY5YTU0ODUKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJsZiIgYTY1MmM3YWIyOGNmZDU1MjljOWNmY2ZlZDViODQzNWY; ssid_ucp_sso_v1=1'
                       '.0.0-KDdhNmE3MWRjY2ViZTRiMWNlMTJjN2QyYzI1M2M1NWRmYTY5YTU0ODUKFwj4ueCXiPTvAhC1tJCOBhjvMTgGQPQHGgJsZiIgYTY1MmM3YWIyOGNmZDU1MjljOWNmY2ZlZDViODQzNWY; n_mh=lIE_aX9LSJUND6iLw_hHl7uvVSs4g-GUPXO6aWyQCL0; msToken=iC10vixO8xiqyytWVnHo3a7JKKyldHHVl25AcRHyVknIW9wQt_1R3_8y6lKMwkaR-6IkXF9AZaPf3QwEdpUGRWQPfJynl57SXZ9ilY'
-                      'vjTM91_dKw2cp76A==; passport_csrf_token_default=41023a9541b61ae05c84ca351a7fbf5c; passport_csrf_token=41023a9541b61ae05c84ca351a7fbf5c; ' + cookie['data'][0]['web_cookie']
+                      'vjTM91_dKw2cp76A==; passport_csrf_token_default=41023a9541b61ae05c84ca351a7fbf5c; passport_csrf_token=41023a9541b61ae05c84ca351a7fbf5c; ' +
+                      cookie['data'][0]['web_cookie']
         }
         resp = requests.get(url, headers=header).content
         print('web粉丝列表：', resp)
@@ -798,10 +825,12 @@ class dyapi:
         """
         import uuid
         url = 'https://www.douyin.com/aweme/v1/web/discover/search/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_user_web&' \
-              'keyword=' + keyword + '&search_source=normal_search&query_correct_type=1&is_filter_search=0&offset=' + str(page) + '&count=20&version_code=160100&ve' \
-              'rsion_name=16.1.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(W' \
-              'indows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2F537.36&browser_online=true'
-        ref = 'https://www.douyin.com/search/' + keyword + '?aid=' + str(uuid.uuid4()) + '&source=normal_search&type=user'
+              'keyword=' + keyword + '&search_source=normal_search&query_correct_type=1&is_filter_search=0&offset=' + str(
+            page) + '&count=20&version_code=160100&ve' \
+                    'rsion_name=16.1.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(W' \
+                    'indows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2F537.36&browser_online=true'
+        ref = 'https://www.douyin.com/search/' + keyword + '?aid=' + str(
+            uuid.uuid4()) + '&source=normal_search&type=user'
         sign = self.get_web_sign(url, ref, self.__web_ua)
         url = url + '&_signature=' + sign['sign']
         header = {
@@ -813,7 +842,6 @@ class dyapi:
         print('web用户搜索列表：', resp)
         return resp
 
-
     def web_video_search(self, keyword, page=None):
         """
         web版获取搜索视频
@@ -822,9 +850,10 @@ class dyapi:
         :return:
         """
         url = 'https://www.douyin.com/aweme/v1/web/search/item/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_video_web&sort_type=0&publish_time=0&' \
-              'keyword=' + keyword + '&search_source=normal_search&query_correct_type=1&is_filter_search=0&offset=' + str(page) + '&count=30&version_code=160100&version_name=16.1.0&cookie_enable' \
-              'd=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+WOW64)+AppleWe' \
-              'bKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2F537.36&browser_online=true'
+              'keyword=' + keyword + '&search_source=normal_search&query_correct_type=1&is_filter_search=0&offset=' + str(
+            page) + '&count=30&version_code=160100&version_name=16.1.0&cookie_enable' \
+                    'd=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+WOW64)+AppleWe' \
+                    'bKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2F537.36&browser_online=true'
         ref = 'https://www.douyin.com/search/' + keyword + '?source=normal_search'
         sign = self.get_web_sign(url, ref, self.__web_ua)
         url = url + '&_signature=' + sign['sign']
@@ -838,7 +867,6 @@ class dyapi:
         print('web视频搜索列表：', resp)
         return resp
 
-
     def get_web_video(self, sec_uid, page):
         """
         web版获取主页作品
@@ -847,9 +875,10 @@ class dyapi:
         :return:
         """
         url = 'https://www.douyin.com/aweme/v1/web/aweme/post/?device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id=' + sec_uid + '&max_cur' \
-              'sor=' + str(page) + '&count=20&publish_video_strategy_type=2&version_code=160100&version_name=16.1.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_langu' \
-              'age=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2' \
-              'F537.36&browser_online=true'
+                                                                                                                                                'sor=' + str(
+            page) + '&count=20&publish_video_strategy_type=2&version_code=160100&version_name=16.1.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_langu' \
+                    'age=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2' \
+                    'F537.36&browser_online=true'
 
         sign = self.get_web_sign(url, 'https://www.douyin.com/user/' + sec_uid, self.__web_ua)
         xbogus = self.get_web_xbogus(url, self.__web_ua)
@@ -913,9 +942,29 @@ class dyapi:
         }
         sign = self.set_sign()
         resp = requests.post(url, data={'sign': sign}, headers=header).json()
-        print('web_cookie:', resp)
+        # print('web_cookie:', resp)
         return resp['data'][0]['web_cookie']
 
+    def whether_live(self, live_url):
+        """
+        取直播id
+        :param live_url:
+        :return:
+        """
+        room_Id = ''
+        header = {
+            'cookie': self.get_web_cookie(),
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+        }
+        for x in range(3):
+            ret = requests.get(live_url, headers=header)
+            if ret.status_code == 200:
+                if 'roomId' in ret.text:
+                    room_Id = get_str_btw(ret.text, 'roomId%22%3A%22', '%22%2C%22web_rid')
+                    break
+            else:
+                room_Id = '失败'
+        return room_Id
 
     def get_ranklist(self, room_id, token=''):
         """
@@ -933,7 +982,6 @@ class dyapi:
         resp = requests.post(url, data={'sign': sign, 'room_id': room_id, 'token': token}, headers=header).text
         print('直播观众列表', resp)
         return resp
-
 
     def set_sign(self):
         """
@@ -960,7 +1008,9 @@ class dyapi:
             'timestamp': ts
         }
         sign = self.set_sign()
-        resp = requests.post(url, data={'sign': sign, 'uid': uid, 'iid': device['data'][0]['install_id'], 'device_id': device['data'][0]['device_id'], 'token': token}, headers=header).text
+        resp = requests.post(url, data={'sign': sign, 'uid': uid, 'iid': device['data'][0]['install_id'],
+                                        'device_id': device['data'][0]['device_id'], 'token': token},
+                             headers=header).text
         print('dy_userinfo:', resp)
         return resp
 
@@ -980,10 +1030,17 @@ class dyapi:
         print('汽水音乐：' + resp)
         return resp
 
+
 if __name__ == '__main__':
 
     api = dyapi('d9ba8ae07d955b83c3b04280f3dc5a4a')
     api.get_appkey()
+
+    # 通过直播链接转直播间id
+
+    live_url = 'https://live.douyin.com/80017709309'
+    room_id = api.whether_live(live_url)
+    print('room_id:', room_id)
 
     ApiInfo = api.get_ApiInfo()
     print('到期时间:' + ApiInfo)
@@ -1012,12 +1069,11 @@ if __name__ == '__main__':
 
     # xbogus测试获取作品列表
     api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
-    
-    
+
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    room_id = '7156069677498665764'
+    room_id = '7160842262530788104'
     for i in range(3):
         ret = api.get_live_barrage(room_id=room_id, cursor=cursor, internal_ext=internalExt)
         res = json.loads(ret)
@@ -1030,7 +1086,6 @@ if __name__ == '__main__':
             print("下播了去别处看看吧")
             break
         time.sleep(3)
-
 
     # 获取直播间观众
     # api.get_ranklist('7070656837364173598')
@@ -1059,6 +1114,7 @@ if __name__ == '__main__':
     # api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
 
     import urllib
+
     keyword = urllib.parse.quote('哈士奇')
 
     # app用户搜索
@@ -1070,8 +1126,6 @@ if __name__ == '__main__':
     # api.get_video_search('哈士奇', page, token)
     # web视频搜索
     # api.web_video_search(keyword, page)
-
-
 
     # 获取评论示例
     api.api_get_comment(vid, 0)
