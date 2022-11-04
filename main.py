@@ -966,6 +966,42 @@ class dyapi:
                 room_Id = '失败'
         return room_Id
 
+
+    def get_room_id(self, live_url):
+        """
+        网页直播链接转直播id
+        :param live_url: 网页版直播链接
+        :return:
+        """
+        url = 'http://www.52jan.com/dyapi/web/get_room_id'
+        ts = str(time.time()).split('.')[0]
+        header = {
+            'cid': self.cid,
+            'timestamp': ts
+        }
+        sign = self.set_sign()
+        resp = requests.post(url, data={'sign': sign, 'url': live_url}, headers=header).text
+        # print('获取直播id', resp)
+        return resp
+
+
+    def web_get_userinfo(self, dy_url):
+        """
+        获取用户信息，IP属地等
+        :param dy_url: 抖音主页链接
+        :return:
+        """
+        url = 'http://www.52jan.com/dyapi/web/get_userinfo'
+        ts = str(time.time()).split('.')[0]
+        header = {
+            'cid': self.cid,
+            'timestamp': ts
+        }
+        sign = self.set_sign()
+        resp = requests.post(url, data={'sign': sign, 'url': dy_url}, headers=header).text
+        # print('用户信息', resp)
+        return resp
+
     def get_ranklist(self, room_id, token=''):
         """
         获取直播观众列表
@@ -1037,10 +1073,15 @@ if __name__ == '__main__':
     api.get_appkey()
 
     # 通过直播链接转直播间id
-
-    live_url = 'https://live.douyin.com/80017709309'
-    room_id = api.whether_live(live_url)
+    live_url = 'https://live.douyin.com/158893494907'
+    room_id = api.get_room_id(live_url)
+    # room_id = api.whether_live(live_url)
     print('room_id:', room_id)
+
+    # 通过主页链接获取用户信息
+    dy_url = 'https://v.douyin.com/M3k41Vd/'
+    user_info = api.web_get_userinfo(dy_url)
+    print('user_info:', user_info)
 
     ApiInfo = api.get_ApiInfo()
     print('到期时间:' + ApiInfo)
