@@ -15,9 +15,9 @@ def get_str_btw(s, f, b):
 
 class dyapi:
     # 主
-    host = 'https://api2.52jan.com'
+    # host = 'https://api2.52jan.com'
     # 备
-    # host = 'https://live.52jan.com'
+    host = 'https://live.52jan.com'
 
     COMMON_DEVICE_PARAMS = {
         'address_book_access': '2',
@@ -706,12 +706,16 @@ class dyapi:
         print('直播带货榜列表：' + resp)
         return resp
 
-    def get_live_barrage(self, room_id, cursor='', internal_ext='', iid='', device_id=''):
+    def get_live_barrage(self, room_id, cursor='', internal_ext='', cookie=''):
         """
         获取直播弹幕
-        :param room_id:直播间ID
+        :param room_id: 直播间ID
+        :param cursor: 翻页参数 首页为空下页为本次请求返回的cursor
+        :param internal_ext: 翻页参数 首页为空下页为本次请求返回的internal_ext
+        :param cookie: 网页cookie
         :return:
         """
+
         url = dyapi.host + '/dyapi/live_barrage/v2'
         ts = str(time.time()).split('.')[0]
         header = {
@@ -725,8 +729,7 @@ class dyapi:
             "room_id": room_id,
             "cursor": cursor,
             "internal_ext": internal_ext,
-            # "device_id": device_id,
-            # "iid": iid
+            "cookie": cookie
         }
 
         resp = requests.post(url, data=data, headers=header).text
@@ -942,7 +945,7 @@ class dyapi:
         }
         sign = self.set_sign()
         resp = requests.post(url, data={'sign': sign}, headers=header).json()
-        # print('web_cookie:', resp)
+        print('web_cookie:', resp)
         return resp['data'][0]['web_cookie']
 
     def whether_live(self, live_url):
@@ -953,17 +956,18 @@ class dyapi:
         """
         room_Id = ''
         header = {
-            'cookie': self.get_web_cookie(),
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
         }
-        for x in range(3):
-            ret = requests.get(live_url, headers=header)
-            if ret.status_code == 200:
-                if 'roomId' in ret.text:
-                    room_Id = get_str_btw(ret.text, 'roomId%22%3A%22', '%22%2C%22web_rid')
-                    break
-            else:
-                room_Id = '失败'
+
+        ret = requests.get(live_url, headers=header)
+        cookie = ret.cookies.get_dict()
+
+        if cookie:
+            ret = requests.get(live_url, headers=header, cookies=cookie).text
+            if 'roomId' in ret:
+                room_Id = get_str_btw(ret, 'roomId%22%3A%22', '%22%2C%22web_rid')
+        else:
+            room_Id = '失败'
         return room_Id
 
 
@@ -1073,15 +1077,15 @@ if __name__ == '__main__':
     api.get_appkey()
 
     # 通过直播链接转直播间id
-    live_url = 'https://live.douyin.com/158893494907'
-    room_id = api.get_room_id(live_url)
+    # live_url = 'https://live.douyin.com/158893494907'
+    # room_id = api.get_room_id(live_url)
     # room_id = api.whether_live(live_url)
-    print('room_id:', room_id)
+    # print('room_id:', room_id)
 
     # 通过主页链接获取用户信息
-    dy_url = 'https://v.douyin.com/M3k41Vd/'
-    user_info = api.web_get_userinfo(dy_url)
-    print('user_info:', user_info)
+    # dy_url = 'https://v.douyin.com/M3k41Vd/'
+    # user_info = api.web_get_userinfo(dy_url)
+    # print('user_info:', user_info)
 
     ApiInfo = api.get_ApiInfo()
     print('到期时间:' + ApiInfo)
@@ -1114,7 +1118,7 @@ if __name__ == '__main__':
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    room_id = '7160842262530788104'
+    room_id = '7163575884526439209'
     for i in range(3):
         ret = api.get_live_barrage(room_id=room_id, cursor=cursor, internal_ext=internalExt)
         res = json.loads(ret)
