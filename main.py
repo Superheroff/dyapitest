@@ -5,6 +5,7 @@ import time
 from urllib.parse import urlencode
 import random
 import hashlib
+import base64
 
 
 def get_str_btw(s, f, b):
@@ -706,6 +707,61 @@ class dyapi:
         print('直播带货榜列表：' + resp)
         return resp
 
+    def get_live_barrage2(self, room_id, cookie, cursor='', internal_ext=''):
+        """
+        获取直播弹幕2
+        :param room_id: 直播间ID
+        :param cookie: 网页cookie
+        :param cursor: 翻页参数 首页为空下页为本次请求返回的cursor
+        :param internal_ext: 翻页参数 首页为空下页为本次请求返回的internal_ext
+        :return:
+        """
+
+
+        url = 'https://live.douyin.com/webcast/im/fetch/?aid=6383&app_name=douyin_web&browser_language=zh-CN&browser_name' \
+              '=Mozilla&browser_online=true&browser_platform=Win32&browser_version=5.0%20%28Windows%20NT%2010.0%3B' \
+              '%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F107.0.0.0%20Safari' \
+              '%2F537.36&cookie_enabled=true&cursor={0}&device_platform=web&did_rule=3&fetch_rule=1&identity=audience' \
+              '&internal_ext={1}&last_rtt=0&live_id=1&resp_content_type=protobuf&room_id={2}&screen_height' \
+              '=1707&screen_width=2560&tz_name=Asia%2FShanghai&version_code=180800'.format(cursor, internal_ext,
+                                                                                           room_id)
+
+        ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0'
+
+        header = {
+            'User-Agent': ua,
+            'Accept-Encoding': 'gzip, deflate',
+            "Referer": "https://live.douyin.com",
+            'Cookie': cookie
+        }
+        # sign = self.get_web_sign(url, 'https://live.douyin.com', ua)
+        # xbogus = self.get_web_xbogus(url, ua)
+        # url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
+
+        ret = requests.get(url, headers=header)
+        print('ret.content', ret.content)
+        return self.get_pb(base64.b64encode(ret.content))
+
+    def get_pb(self, content):
+        """
+        解析直播弹幕
+        :param content: 弹幕字节流
+        :return:
+        """
+        url = dyapi.host + '/dyapi/live_barrage/v1'
+        ts = str(time.time()).split('.')[0]
+        sign = self.set_sign()
+        header = {
+            'cid': self.cid,
+            'timestamp': ts,
+            'user-agent': 'okhttp/3.10.0.12',
+            "sign": sign,
+        }
+
+        resp = requests.post(url, data={'data': content}, headers=header).text
+        print('直播弹幕2：' + resp)
+        return resp
+
     def get_live_barrage(self, room_id, cursor='', internal_ext='', cookie=''):
         """
         获取直播弹幕
@@ -970,7 +1026,6 @@ class dyapi:
             room_Id = '失败'
         return room_Id
 
-
     def get_room_id(self, live_url):
         """
         网页直播链接转直播id
@@ -987,7 +1042,6 @@ class dyapi:
         resp = requests.post(url, data={'sign': sign, 'url': live_url}, headers=header).text
         # print('获取直播id', resp)
         return resp
-
 
     def web_get_userinfo(self, dy_url):
         """
@@ -1113,18 +1167,20 @@ if __name__ == '__main__':
     # api.get_userinfo('100698990140')
 
     # xbogus测试获取作品列表
-    api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
+    # api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
 
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    room_id = '7163575884526439209'
+    cookie = ''
+    room_id = '7169439185101753127'
     for i in range(3):
-        ret = api.get_live_barrage(room_id=room_id, cursor=cursor, internal_ext=internalExt)
+        ret = api.get_live_barrage2(room_id=room_id, cursor=cursor, internal_ext=internalExt, cookie=cookie)
         res = json.loads(ret)
         try:
             cursor = res['cursor']
             internalExt = res['internalExt']
+            print(cursor)
             if i >= 2:
                 print("正在直播：" + cursor)
         except KeyError:
@@ -1173,7 +1229,7 @@ if __name__ == '__main__':
     # api.web_video_search(keyword, page)
 
     # 获取评论示例
-    api.api_get_comment(vid, 0)
+    # api.api_get_comment(vid, 0)
     # api.get_video_comment(vid, 0)
 
     # 获取视频点赞列表
@@ -1186,4 +1242,4 @@ if __name__ == '__main__':
     # api.get_live_user('64613798668')
 
     # 通过uid获取用户信息
-    api.get_dy_userinfo('94409926892', token)
+    # api.get_dy_userinfo('94409926892', token)
