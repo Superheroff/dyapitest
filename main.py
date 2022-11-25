@@ -707,7 +707,7 @@ class dyapi:
         print('直播带货榜列表：' + resp)
         return resp
 
-    def get_live_barrage2(self, room_id, cookie, cursor='', internal_ext=''):
+    def get_live_barrage_v2(self, room_id, cookie, cursor='', internal_ext=''):
         """
         获取直播弹幕2
         :param room_id: 直播间ID
@@ -732,13 +732,13 @@ class dyapi:
             'User-Agent': ua,
             'Accept-Encoding': 'gzip, deflate',
             "Referer": "https://live.douyin.com",
-            'Cookie': cookie
+            # 'Cookie': cookie
         }
         # sign = self.get_web_sign(url, 'https://live.douyin.com', ua)
         # xbogus = self.get_web_xbogus(url, ua)
         # url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
 
-        ret = requests.get(url, headers=header)
+        ret = requests.get(url, headers=header, cookies=cookie)
         print('ret.content', ret.content)
         return self.get_pb(base64.b64encode(ret.content))
 
@@ -748,7 +748,7 @@ class dyapi:
         :param content: 弹幕字节流
         :return:
         """
-        url = dyapi.host + '/dyapi/live_barrage/v1'
+        url = dyapi.host + '/dyapi/live_barrage/get_pb'
         ts = str(time.time()).split('.')[0]
         sign = self.set_sign()
         header = {
@@ -759,12 +759,12 @@ class dyapi:
         }
 
         resp = requests.post(url, data={'data': content}, headers=header).text
-        print('直播弹幕2：' + resp)
+        print('解析直播弹幕：' + resp)
         return resp
 
     def get_live_barrage(self, room_id, cursor='', internal_ext='', cookie=''):
         """
-        获取直播弹幕
+        获取直播弹幕v2
         :param room_id: 直播间ID
         :param cursor: 翻页参数 首页为空下页为本次请求返回的cursor
         :param internal_ext: 翻页参数 首页为空下页为本次请求返回的internal_ext
@@ -789,8 +789,41 @@ class dyapi:
         }
 
         resp = requests.post(url, data=data, headers=header).text
-        print('直播弹幕：' + resp)
+        print('直播弹幕v2：' + resp)
         return resp
+
+    def get_live_barrage_v3(self, room_id, cursor='', internal_ext='', iid='', device_id=''):
+        """
+        获取直播弹幕v3
+        :param room_id: 直播间ID
+        :param cursor: 翻页参数 首页为空下页为本次请求返回的cursor
+        :param internal_ext: 翻页参数 首页为空下页为本次请求返回的internal_ext
+        :param iid: 设备id
+        :param device_id: 设备id
+        :return:
+        """
+
+        url = dyapi.host + '/dyapi/live_barrage/v3'
+        ts = str(time.time()).split('.')[0]
+        header = {
+            'cid': self.cid,
+            'timestamp': ts,
+            'user-agent': 'okhttp/3.10.0.12'
+        }
+        sign = self.set_sign()
+        data = {
+            "sign": sign,
+            "room_id": room_id,
+            "cursor": cursor,
+            "internal_ext": internal_ext,
+            "iid": iid,
+            "device_id": device_id
+        }
+
+        resp = requests.post(url, data=data, headers=header).text
+        print('直播弹幕v3：' + resp)
+        return resp
+
 
     def re_channel(self):
         channel = ['wandoujia_aweme_feisuo', 'wandoujia_aweme2', 'tengxun_new', 'douyinw', 'douyin_tengxun_wzl',
@@ -1172,10 +1205,12 @@ if __name__ == '__main__':
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    cookie = ''
-    room_id = '7169439185101753127'
+    room_id = '7169830661275372327'
+    device_id = device['data'][0]['device_id']
+    iid = device['data'][0]['install_id']
     for i in range(3):
-        ret = api.get_live_barrage2(room_id=room_id, cursor=cursor, internal_ext=internalExt, cookie=cookie)
+        messages = api.get_live_barrage_v3(room_id=room_id, cursor=cursor, internal_ext=internalExt, iid=iid, device_id=device_id)
+        ret = api.get_pb(messages)
         res = json.loads(ret)
         try:
             cursor = res['cursor']
