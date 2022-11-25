@@ -707,9 +707,9 @@ class dyapi:
         print('直播带货榜列表：' + resp)
         return resp
 
-    def get_live_barrage_v2(self, room_id, cookie, cursor='', internal_ext=''):
+    def get_live_barrage(self, room_id, cookie, cursor='', internal_ext=''):
         """
-        获取直播弹幕2
+        获取直播弹幕流
         :param room_id: 直播间ID
         :param cookie: 网页cookie
         :param cursor: 翻页参数 首页为空下页为本次请求返回的cursor
@@ -762,9 +762,9 @@ class dyapi:
         print('解析直播弹幕：' + resp)
         return resp
 
-    def get_live_barrage(self, room_id, cursor='', internal_ext='', cookie=''):
+    def get_live_barrage_v2(self, room_id, cursor='', internal_ext='', cookie=''):
         """
-        获取直播弹幕v2
+        获取直播弹幕v2，无需解析
         :param room_id: 直播间ID
         :param cursor: 翻页参数 首页为空下页为本次请求返回的cursor
         :param internal_ext: 翻页参数 首页为空下页为本次请求返回的internal_ext
