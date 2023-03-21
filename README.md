@@ -3,8 +3,7 @@
 - 抖音相关api整理测试，仅供测试学习使用
 - 如有侵权请[联系我](https://www.app966.cn)删除
 ```
-https://www.douyin.com
-https://www.douyin.com/mcn
+https://www.douyin.com/robots.txt
 ```
 
 ## 2022.08.06
