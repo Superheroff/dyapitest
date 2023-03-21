@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-import requests
+import base64
+import hashlib
 import json
+import random
 import time
 from urllib.parse import urlencode
-import random
-import hashlib
-import base64
+
+import requests
 
 
 def get_str_btw(s, f, b):
@@ -15,11 +16,8 @@ def get_str_btw(s, f, b):
 
 
 class dyapi:
-    # 主
-    # host = 'https://api2.52jan.com'
-    # 备
-    host = 'https://live.52jan.com'
-
+    host = 'https://api2.52jan.com'
+    
     COMMON_DEVICE_PARAMS = {
         'address_book_access': '2',
         'retry_type': 'no_retry',
@@ -50,7 +48,7 @@ class dyapi:
     def __init__(self, cid):
         self.cid = cid
         self.array = {}
-        self.__web_ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
+        self.__web_ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
         self.__appkey = ''
         self.__params = {
             'address_book_access': '1',
@@ -717,7 +715,6 @@ class dyapi:
         :return:
         """
 
-
         url = 'https://live.douyin.com/webcast/im/fetch/?aid=6383&app_name=douyin_web&browser_language=zh-CN&browser_name' \
               '=Mozilla&browser_online=true&browser_platform=Win32&browser_version=5.0%20%28Windows%20NT%2010.0%3B' \
               '%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F107.0.0.0%20Safari' \
@@ -824,7 +821,6 @@ class dyapi:
         print('直播弹幕v3：' + resp)
         return resp
 
-
     def re_channel(self):
         channel = ['wandoujia_aweme_feisuo', 'wandoujia_aweme2', 'tengxun_new', 'douyinw', 'douyin_tengxun_wzl',
                    'aweGW', 'aweme_360', 'aweme_tengxun', 'xiaomi']
@@ -908,27 +904,29 @@ class dyapi:
         print('web粉丝列表：', resp)
         return resp
 
-    def web_user_search(self, keyword, page=None):
+    def web_user_search(self, keyword, cookie, page) -> str:
         """
         web版搜索用户
-        :param keyword:搜索关键词
-        :param page:
+        :param keyword: 搜索关键词
+        :param cookie: web
+        :param page: 默认0
         :return:
         """
-        import uuid
-        url = 'https://www.douyin.com/aweme/v1/web/discover/search/?device_platform=webapp&aid=6383&channel=channel_pc_web&search_channel=aweme_user_web&' \
-              'keyword=' + keyword + '&search_source=normal_search&query_correct_type=1&is_filter_search=0&offset=' + str(
-            page) + '&count=20&version_code=160100&ve' \
-                    'rsion_name=16.1.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(W' \
-                    'indows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2F537.36&browser_online=true'
-        ref = 'https://www.douyin.com/search/' + keyword + '?aid=' + str(
-            uuid.uuid4()) + '&source=normal_search&type=user'
+        url = 'https://www.douyin.com/aweme/v1/web/discover/search/?device_platform=webapp&aid=6383&channel' \
+              '=channel_pc_web&search_channel=aweme_user_web&keyword=%s&search_source=switch_tab&query_correct_type=1' \
+              '&is_filter_search=0&from_group_id=&offset=%s&count=20&search_id=&pc_client_type=1&version_code=170400' \
+              '&version_name=17.4.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN' \
+              '&browser_platform=Win32&browser_name=Chrome&browser_version=110.0.0.0&browser_online=true&engine_name' \
+              '=Blink&engine_version=110.0.0.0&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=8&platform' \
+              '=PC&downlink=10&effective_type=4g&round_trip_time=50' % (keyword, page)
+        ref = 'https://www.douyin.com/search/%s?source=switch_tab&type=user' % keyword
         sign = self.get_web_sign(url, ref, self.__web_ua)
-        url = url + '&_signature=' + sign['sign']
+        xbogus = self.get_web_xbogus(url, self.__web_ua)
+        url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
             'referer': ref,
-            'Cookie': cookie['data'][0]['web_cookie']
+            'Cookie': cookie
         }
         resp = requests.get(url, headers=header).text
         print('web用户搜索列表：', resp)
@@ -952,24 +950,27 @@ class dyapi:
         header = {
             'User-Agent': self.__web_ua,
             'referer': ref,
-            'Cookie': cookie['data'][0]['web_cookie']
+            'Cookie': self.get_web_cookie()
         }
 
         resp = requests.get(url, headers=header).text
         print('web视频搜索列表：', resp)
         return resp
 
-    def get_web_video(self, sec_uid, page):
+    def get_web_video(self, sec_uid, page, cookie):
         """
         web版获取主页作品
         :param sec_uid:
         :param page:
+        :param cookie:
         :return:
         """
         url = 'https://www.douyin.com/aweme/v1/web/aweme/post/?device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id=' + sec_uid + '&max_cur' \
                                                                                                                                                 'sor=' + str(
-            page) + '&count=20&publish_video_strategy_type=2&version_code=160100&version_name=16.1.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_langu' \
-                    'age=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(Windows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2' \
+            page) + '&count=20&publish_video_strategy_type=2&version_code=160100&version_name=16.1.0&cookie_enabled' \
+                    '=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(' \
+                    'Windows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,' \
+                    '+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2' \
                     'F537.36&browser_online=true'
 
         sign = self.get_web_sign(url, 'https://www.douyin.com/user/' + sec_uid, self.__web_ua)
@@ -977,9 +978,10 @@ class dyapi:
         url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
-            'referer': 'https://www.douyin.com/user/' + sec_uid
+            'referer': 'https://www.douyin.com/user/' + sec_uid,
+            'cookie': cookie
         }
-        resp = requests.get(url, headers=header, cookies=self.get_cookie()).text
+        resp = requests.get(url, headers=header).text
         print('web作品列表：', resp)
         return resp
 
@@ -1025,7 +1027,7 @@ class dyapi:
         获取滑块后的cookie
         :return:
         """
-        url = dyapi.host + '/dyapi/get_cookie'
+        url = dyapi.host + '/dyapi/get_cookie/v2'
         ts = str(time.time()).split('.')[0]
         header = {
             'cid': self.cid,
@@ -1034,8 +1036,7 @@ class dyapi:
         }
         sign = self.set_sign()
         resp = requests.post(url, data={'sign': sign}, headers=header).json()
-        print('web_cookie:', resp)
-        return resp['data'][0]['web_cookie']
+        return resp['data'][0][0]
 
     def whether_live(self, live_url):
         """
@@ -1159,7 +1160,6 @@ class dyapi:
 
 
 if __name__ == '__main__':
-
     api = dyapi('d9ba8ae07d955b83c3b04280f3dc5a4a')
     api.get_appkey()
 
@@ -1199,29 +1199,31 @@ if __name__ == '__main__':
     # 获取用户信息
     # api.get_userinfo('100698990140')
 
-    # xbogus测试获取作品列表
-    # api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
+    # 获取web作品列表
+    api.get_web_video('MS4wLjABAAAA2Ixr52FdZXzowS37S8bhgGYUcruovygBNDqOtBxFfvI', page, cookie)
 
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    room_id = '7169830661275372327'
-    device_id = device['data'][0]['device_id']
-    iid = device['data'][0]['install_id']
-    for i in range(3):
-        messages = api.get_live_barrage_v3(room_id=room_id, cursor=cursor, internal_ext=internalExt, iid=iid, device_id=device_id)
-        ret = api.get_pb(messages)
-        res = json.loads(ret)
-        try:
-            cursor = res['cursor']
-            internalExt = res['internalExt']
-            print(cursor)
-            if i >= 2:
-                print("正在直播：" + cursor)
-        except KeyError:
-            print("下播了去别处看看吧")
-            break
-        time.sleep(3)
+    room_id = '7195168871676906277'
+    cookie = ''
+
+    # device_id = device['data'][0]['device_id']
+    # iid = device['data'][0]['install_id']
+    # for i in range(3):
+    #     ret = api.get_live_barrage_v2(room_id=room_id, cursor=cursor, internal_ext=internalExt, cookie=cookie)
+    #     # messages = api.get_live_barrage_v3(room_id=room_id, cursor=cursor, internal_ext=internalExt, iid=iid, device_id=device_id)
+    #     # ret = api.get_pb(messages)
+    #     res = json.loads(ret)
+    #     try:
+    #         cursor = res['cursor']
+    #         internalExt = res['internalExt']
+    #         if i >= 2:
+    #             print("正在直播：" + cursor)
+    #     except KeyError:
+    #         print("下播了去别处看看吧")
+    #         break
+    #     time.sleep(3)
 
     # 获取直播间观众
     # api.get_ranklist('7070656837364173598')
@@ -1246,17 +1248,13 @@ if __name__ == '__main__':
     # 获取web粉丝列表
     # api.get_web_follower(sec_uid, str(time.time()))
 
-    # 获取web作品列表示例
-    # api.get_web_video('MS4wLjABAAAA8U_l6rBzmy7bcy6xOJel4v0RzoR_wfAubGPeJimN__4', page)
-
     import urllib
 
     keyword = urllib.parse.quote('哈士奇')
-
     # app用户搜索
     # api.get_user_search('哈士奇', page, token)
     # web用户搜索
-    # api.web_user_search(keyword, page)
+    api.web_user_search(keyword, cookie, "0")
 
     # app视频搜索
     # api.get_video_search('哈士奇', page, token)
