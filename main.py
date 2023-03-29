@@ -16,8 +16,9 @@ def get_str_btw(s, f, b):
 
 
 class dyapi:
+    # 主
     host = 'https://api2.52jan.com'
-    
+
     COMMON_DEVICE_PARAMS = {
         'address_book_access': '2',
         'retry_type': 'no_retry',
@@ -43,7 +44,7 @@ class dyapi:
         'cpu_support64': 'false'
     }
 
-    proxies = {'https': 'https://togk71z9.xiaomy.net:44510'}
+    proxies = {'http': '127.0.0.1:7890', 'https': '127.0.0.1:7890'}
 
     def __init__(self, cid):
         self.cid = cid
@@ -920,9 +921,9 @@ class dyapi:
               '=Blink&engine_version=110.0.0.0&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=8&platform' \
               '=PC&downlink=10&effective_type=4g&round_trip_time=50' % (keyword, page)
         ref = 'https://www.douyin.com/search/%s?source=switch_tab&type=user' % keyword
-        sign = self.get_web_sign(url, ref, self.__web_ua)
+        # sign = self.get_web_sign(url, ref, self.__web_ua)
         xbogus = self.get_web_xbogus(url, self.__web_ua)
-        url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
+        url += '&X-Bogus=' + xbogus['xbogus']  # + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
             'referer': ref,
@@ -930,6 +931,32 @@ class dyapi:
         }
         resp = requests.get(url, headers=header).text
         print('web用户搜索列表：', resp)
+        return resp
+
+    def web_my_follower(self) -> str:
+        """
+        web获取自己的粉丝列表
+        :return:
+        """
+        url = 'https://www.douyin.com/aweme/v1/web/user/follower/list/?device_platform=webapp&aid=6383&channel' \
+              '=channel_pc_web&user_id=1935590725788205&sec_user_id' \
+              '=MS4wLjABAAAAM7F13HAkU5iljq8yBp6WSb7m6Ia028iT00HNWzWyNRlnUSkumJYb8jG6ri5g6W3m&offset=0&min_time=0' \
+              '&max_time=1679574528&count=20&source_type=1&gps_access=0&address_book_access=0&pc_client_type=1' \
+              '&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1536&screen_height=864' \
+              '&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=111.0.0.0' \
+              '&browser_online=true&engine_name=Blink&engine_version=111.0.0.0&os_name=Windows&os_version=10' \
+              '&cpu_core_num=8&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50'
+        ref = 'https://www.douyin.com/user/self'
+        sign = self.get_web_sign(url, ref, self.__web_ua)
+        xbogus = self.get_web_xbogus(url, self.__web_ua)
+        url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
+        header = {
+            'User-Agent': self.__web_ua,
+            'referer': ref,
+            'Cookie': 'passport_csrf_token=f20a3ff92fdc81a579374d3e51ffed45; passport_csrf_token_default=f20a3ff92fdc81a579374d3e51ffed45; s_v_web_id=verify_ldlndk0i_N19VDLUA_7oSk_4GZG_Adl1_ryW6rlRCfTEv; ttcid=1ab18e1e09554ddd8297b8a15ab0165144; xgplayer_user_id=934970751508; LOGIN_STATUS=1; store-region=cn-jx; store-region-src=uid; n_mh=KQ-p6faDP5EkFlkMjaqicI6RZzvZ01nR1dSjk560S14; d_ticket=3f3ff3a64c5fbacb967e00ba35f6d08fbcce5; publish_badge_show_info="0,0,0,1679293080807"; _tea_utm_cache_10006=undefined; _tea_utm_cache_6247=undefined; _tea_utm_cache_1243=undefined; MONITOR_WEB_ID=f58cdd7b-7773-4cc6-b546-a3bac43d43cb; ttwid=1|fV_pvne8oMRuOmMsyU5GTAk3RJyIt2whEHUFb28fD8I|1679295647|50986abae4b47c748306c6da1e6a0fa1e60d675cfe6313bf2dc948f66cfa75a9; SEARCH_RESULT_LIST_TYPE="single"; download_guide="3/20230321"; FOLLOW_LIVE_POINT_INFO="MS4wLjABAAAAM7F13HAkU5iljq8yBp6WSb7m6Ia028iT00HNWzWyNRlnUSkumJYb8jG6ri5g6W3m/1679414400000/0/0/1679383305927"; strategyABtestKey="1679568116.481"; passport_assist_user=CkG6XT9RNO-kTFz_cUa7rPie40nC5fmfBeiw-3R3u48fmaR_B6JbBktRSw_HKJ2WEgOYt3pOb2xhWfyizoqygG1hdhpICjwk4U-Whi6BGVKopoU-jcT-Jdgta23ZRDiN4qhvv-5YxHWVObQJG3jJ5VXAzwBATRsuMw0xrBW6PxD6dTIQ88SsDRiJr9ZUIgEDkwqHgA==; sso_uid_tt=2de736ee679a93288f1d1854a0985f65; sso_uid_tt_ss=2de736ee679a93288f1d1854a0985f65; toutiao_sso_user=229b5eff65d30531ca152e1ba4ca1881; toutiao_sso_user_ss=229b5eff65d30531ca152e1ba4ca1881; sid_ucp_sso_v1=1.0.0-KGM0MmQ1M2M4ZTViNjhkZDllNDEyNmFhNmY2NmU4Mjk5OTk2NDljMmUKIQitxJCtjY24AxD22fCgBhjvMSAMMNa4tYQGOAVA-wdIAxoCbHEiIDIyOWI1ZWZmNjVkMzA1MzFjYTE1MmUxYmE0Y2ExODgx; ssid_ucp_sso_v1=1.0.0-KGM0MmQ1M2M4ZTViNjhkZDllNDEyNmFhNmY2NmU4Mjk5OTk2NDljMmUKIQitxJCtjY24AxD22fCgBhjvMSAMMNa4tYQGOAVA-wdIAxoCbHEiIDIyOWI1ZWZmNjVkMzA1MzFjYTE1MmUxYmE0Y2ExODgx; odin_tt=84093224bd43f104588b104ee91247e73a214153e1e24bb8e170a9200a7b7272f5bd2f3da203da0294736832a4cf567e03d1cae3d5385ae2c899b8600dcfba84; uid_tt=01c7463fb5c7e609938359902f49415a; uid_tt_ss=01c7463fb5c7e609938359902f49415a; sid_tt=796b5cac70aa184aac6afcdb522235a2; sessionid=796b5cac70aa184aac6afcdb522235a2; sessionid_ss=796b5cac70aa184aac6afcdb522235a2; sid_guard=796b5cac70aa184aac6afcdb522235a2|1679568121|5183996|Mon,+22-May-2023+10:41:57+GMT; sid_ucp_v1=1.0.0-KGNlM2JkMzk1ZGY4NGFjNzFmOGZmZjc4MTRiZWI0YTg0MDhkNTdhMDEKGwitxJCtjY24AxD52fCgBhjvMSAMOAVA-wdIBBoCaGwiIDc5NmI1Y2FjNzBhYTE4NGFhYzZhZmNkYjUyMjIzNWEy; ssid_ucp_v1=1.0.0-KGNlM2JkMzk1ZGY4NGFjNzFmOGZmZjc4MTRiZWI0YTg0MDhkNTdhMDEKGwitxJCtjY24AxD52fCgBhjvMSAMOAVA-wdIBBoCaGwiIDc5NmI1Y2FjNzBhYTE4NGFhYzZhZmNkYjUyMjIzNWEy; __ac_nonce=0641c45b500fe1f25e1da; __ac_signature=_02B4Z6wo00f01iu26twAAIDCq7QQn0kk8DYrlu5AAO8AZWAFUqanP06RNcBNyhP.5fh.rvXQMdlLIpgpkFRcAtONAYMBUK1wREpF8elGK8Jb.jMhrvuE-KZ2-svrqjZ0QViqzYW61lq.tAEyb1; douyin.com; VIDEO_FILTER_MEMO_SELECT={"expireTime":1680179257071,"type":1}; csrf_session_id=700eb3f83137527fd9d2773bb6604e7e; FOLLOW_NUMBER_YELLOW_POINT_INFO="MS4wLjABAAAAM7F13HAkU5iljq8yBp6WSb7m6Ia028iT00HNWzWyNRlnUSkumJYb8jG6ri5g6W3m/1679587200000/0/0/1679575657382"; bd_ticket_guard_client_data=eyJiZC10aWNrZXQtZ3VhcmQtdmVyc2lvbiI6MiwiYmQtdGlja2V0LWd1YXJkLWNsaWVudC1jZXJ0IjoiLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tXG5NSUlDRkRDQ0FicWdBd0lCQWdJVVVhYjJYTEF4d21jVkljU1RGMEE1UE82OUpDMHdDZ1lJS29aSXpqMEVBd0l3XG5NVEVMTUFrR0ExVUVCaE1DUTA0eElqQWdCZ05WQkFNTUdYUnBZMnRsZEY5bmRXRnlaRjlqWVY5bFkyUnpZVjh5XG5OVFl3SGhjTk1qTXdNakF6TURVeU5qTTFXaGNOTXpNd01qQXpNVE15TmpNMVdqQW5NUXN3Q1FZRFZRUUdFd0pEXG5UakVZTUJZR0ExVUVBd3dQWW1SZmRHbGphMlYwWDJkMVlYSmtNRmt3RXdZSEtvWkl6ajBDQVFZSUtvWkl6ajBEXG5BUWNEUWdBRVQ1ZHE5Q2llbURJdWF6Ly9iMEpyQktSUzdUMVlCMFU4RUJjMHF6LzkvelgyNzNIWkdqMFRHeHFmXG5BcHdONno0b3NSa3VnL2JBd2VhOVlxWkZFRXVTNGFPQnVUQ0J0akFPQmdOVkhROEJBZjhFQkFNQ0JhQXdNUVlEXG5WUjBsQkNvd0tBWUlLd1lCQlFVSEF3RUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBd1lJS3dZQkJRVUhBd1F3XG5LUVlEVlIwT0JDSUVJQ3RDUVY3UlM3UXdYR2w4cUJoWU1adk11WWhWSURvckViNWZDekswK0xxb01Dc0dBMVVkXG5Jd1FrTUNLQUlES2xaK3FPWkVnU2pjeE9UVUI3Y3hTYlIyMVRlcVRSZ05kNWxKZDdJa2VETUJrR0ExVWRFUVFTXG5NQkNDRG5kM2R5NWtiM1Y1YVc0dVkyOXRNQW9HQ0NxR1NNNDlCQU1DQTBnQU1FVUNJUUNBY0VjRUM5ZVNxODJPXG5hVVU0QVhpYU5kNnlOMExGRmhYallidjY1V205UEFJZ0o3Rk91d1l2WE5ZMFFwVzhpVnNuWnltdEdteG1jNWJYXG5ISGNIeTMyTEVXbz1cbi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS1cbiJ9; msToken=Z9D1QOzp4LLjRhl7LXOgwfON5yfxZ9ybUmT2xw6jlSea4iu6BEp1wW3AwxhEv_9GA57r_pKre-KWuZ24rGlds7bh3ogmeUz2H47OFOt8wS7H-Oo8mXhfUA==; tt_scid=uyzBkRIJtK1Ty0HYk83HVuL8SpYnpZEr9woVMQrHCrkhpyZht6reBEJHTLM7T6xO9653; pwa2="2|1"; my_rd=1; home_can_add_dy_2_desktop="1"; passport_fe_beating_status=true; msToken=8XJdwmDjUsZUAYeEwnvh-pfgV56R1dAr3FP2CRI6MDIkN2hnq3TFQu86iA1Q2nEaK2rqzZrUqVRvDe1Pbhm5LR5jxkr1nqUr8rCYYVNEwGri23o10bDdIQ=='
+        }
+        resp = requests.get(url, headers=header).text
+        print('web获取自己的粉丝列表：', resp)
         return resp
 
     def web_video_search(self, keyword, page=None):
@@ -965,25 +992,45 @@ class dyapi:
         :param cookie:
         :return:
         """
-        url = 'https://www.douyin.com/aweme/v1/web/aweme/post/?device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id=' + sec_uid + '&max_cur' \
-                                                                                                                                                'sor=' + str(
-            page) + '&count=20&publish_video_strategy_type=2&version_code=160100&version_name=16.1.0&cookie_enabled' \
-                    '=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Mozilla&browser_version=5.0+(' \
-                    'Windows+NT+10.0%3B+WOW64)+AppleWebKit%2F537.36+(KHTML,' \
-                    '+like+Gecko)+Chrome%2F86.0.4240.198+Safari%2' \
-                    'F537.36&browser_online=true'
+        url = 'https://www.douyin.com/aweme/v1/web/locate/post/?device_platform=webapp&aid=6383&channel' \
+              '=channel_pc_web&sec_user_id=%s&max_cursor=0&locate_item_id=7215521171238931749&locate_item_cursor=1679816897000&locate_query' \
+              '=true&count=10&publish_video_strategy_type=2&pc_client_type=1&version_code=170400&version_name=17.4.0' \
+              '&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32' \
+              '&browser_name=Firefox&browser_version=111.0&browser_online=true&engine_name=Gecko&engine_version=109.0' \
+              '&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=&platform=PC' % sec_uid
 
-        sign = self.get_web_sign(url, 'https://www.douyin.com/user/' + sec_uid, self.__web_ua)
-        xbogus = self.get_web_xbogus(url, self.__web_ua)
+        ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0'
+
+        sign = self.get_web_sign(url, 'https://www.douyin.com/', ua)
+        xbogus = self.get_web_xbogus(url, ua)
         url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
-            'referer': 'https://www.douyin.com/user/' + sec_uid,
+            'referer': 'https://www.douyin.com/',
             'cookie': cookie
         }
         resp = requests.get(url, headers=header).text
         print('web作品列表：', resp)
         return resp
+
+    def get_ac_sign(self, uri):
+        """
+        ac_sign
+        :param uri:
+        :return:
+        """
+        url = dyapi.host + '/dyapi/web/ac_sign'
+        ts = str(time.time()).split('.')[0]
+        header = {
+            'cid': self.cid,
+            'timestamp': ts,
+            'User-Agent': 'okhttp/3.10.0.12'
+        }
+        sign = self.set_sign()
+        resp = requests.post(url, data={'sign': sign, 'url': uri}, headers=header).text
+        print('ac_sign:', resp)
+        return resp
+
 
     def get_live_user(self, uid):
         """
@@ -1180,6 +1227,9 @@ if __name__ == '__main__':
     # app取服务器提前生成好的设备号
     device = api.get_device()
 
+    # ac_sign
+    api.get_ac_sign('https://www.douyin.com/user/MS4wLjABAAAA2Ixr52FdZXzowS37S8bhgGYUcruovygBNDqOtBxFfvI')
+
     # web版获取cookie
     cookie = api.get_web_cookie()
     print('ret_cookie:', cookie)
@@ -1187,7 +1237,7 @@ if __name__ == '__main__':
     vid = '7050046203945356579'
     page = 0
 
-    token = '00470bbfeb49d95c2ca1e26ac4a1dd510f0384dbdf2f3665dd4bd0714bd8a76157a7058d65daa90d26694f0d385459aa4ab5929223fadc1d5d4c6eaec97cb70c4ede68a69a8853fa2a41b7018eedde0ec5ddd920f0d3e174de2cdccc94b4cfd0e140b-1.0.1'
+    token = ''
     # api.get_qishui()
 
     # 获取粉丝列表示例
@@ -1255,6 +1305,8 @@ if __name__ == '__main__':
     # api.get_user_search('哈士奇', page, token)
     # web用户搜索
     api.web_user_search(keyword, cookie, "0")
+
+    # api.web_my_follower()
 
     # app视频搜索
     # api.get_video_search('哈士奇', page, token)
