@@ -20,4 +20,8 @@ https://www.douyin.com/robots.txt
 3. 直接读取网页`./user/MS4wLjABAAAAlZNPHQhQMZ-06qmnETc-ifP3b72dCoZSBRoGVHdPQdw`，只允许读取一页
 - 有了以上结论就大概知道如何解决了
 - 我的场景是抖音摸鱼小插件，主要是随机取一位自己添加在随机池内的播主的近期随机一个作品并播放
-- 所以我直接使用`scrapy`读网页即可
+- 所以我直接使用`scrapy`读网页即可，[拿到的数据](https://github.com/Superheroff/dyapitest/blob/main/web_video_demo.json)
+## 2023.03.29
+- 这个数据太乱太长了建议不要取整段，用正则精简下`<script id="RENDER_DATA" type="application/json">(.*?)%22post%22%3A%7B%22(.*?)%2C%22_location`
+- 这样之后返回的内容要拼接一下拼接头：`{"post":{"`
+- 推荐一个好用的json解析网站，可以检查json错误位置[jsonlint](https://jsonlint.com/)
