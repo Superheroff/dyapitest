@@ -29,7 +29,5 @@ https://www.douyin.com/robots.txt
 ## 2023.04.05
 **测试视频信息列表**
 - 使用flask包装接口并调用测试
-<details>
-<summary>展开查看</summary>
-[查看源码](https://github.com/Superheroff/dyapitest/blob/main/app.py)
-</details>
+- [查看源码](https://github.com/Superheroff/dyapitest/blob/main/app.py)
+
