@@ -48,5 +48,5 @@ http://api2.52jan.com/video_info?video_list=[7206592982118616324,718033304181281
 {"msg": "此接口已失效"}
 ```
 
-- [查看源码](https://github.com/Superheroff/dyapitest/blob/main/app.py)
+- [查看源码](https://github.com/Superheroff/dyapitest/blob/main/video_info.py)
 
