@@ -25,3 +25,11 @@ https://www.douyin.com/robots.txt
 - 这个数据太乱太长了建议不要取整段，用正则精简下`<script id="RENDER_DATA" type="application/json">(.*?)%22post%22%3A%7B%22(.*?)%2C%22_location`
 - 这样之后返回的内容要拼接一下，拼接头：`{"post":{"`
 - 推荐一个好用的json解析网站，可以快速定位json错误位置[jsonlint](https://jsonlint.com/)
+
+## 2023.04.05
+**测试视频信息列表**
+
+<details>
+<summary>展开查看</summary>
+- 使用python-flask包装接口并调用测试
+</details>
