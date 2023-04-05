@@ -46,7 +46,7 @@ def video_info():
             v_list = random.choice(n)
             uri = v_list["video"]["play_addr"]["url_list"][0]
         except KeyError:
-            uri = {'msg': '此接口已失效'}
+            return {'msg': '此接口已失效'}
         return redirect(uri, code=301)
       
       
