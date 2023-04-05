@@ -33,14 +33,15 @@ https://www.douyin.com/robots.txt
 **接口说明**
 - GET：重定向至随机一个视频的源地址
 - POST：返回视频所有信息
+
 参数名|参数类型|参数描述|参数示例
 ---|---|---|---
 video_list|int: list|视频ID列表|[7206592982118616324,7180333041812819237,7212918206074309899]
+
 
 **请求示例**
 ```
 http://api2.52jan.com/video_info?video_list=[7206592982118616324,7180333041812819237,7212918206074309899]
 ```
-
 - [查看源码](https://github.com/Superheroff/dyapitest/blob/main/app.py)
 
