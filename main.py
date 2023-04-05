@@ -1013,10 +1013,10 @@ class dyapi:
         print('web作品列表：', resp)
         return resp
 
-    def get_ac_sign(self, uri):
+    def get_ac_sign(self, ac_nonce):
         """
         ac_sign
-        :param uri:
+        :param ac_nonce:
         :return:
         """
         url = dyapi.host + '/dyapi/web/ac_sign'
@@ -1027,10 +1027,20 @@ class dyapi:
             'User-Agent': 'okhttp/3.10.0.12'
         }
         sign = self.set_sign()
-        resp = requests.post(url, data={'sign': sign, 'url': uri}, headers=header).text
+        resp = requests.post(url, data={'sign': sign, 'ac_nonce': ac_nonce}, headers=header).text
         print('ac_sign:', resp)
         return resp
 
+    def get_video_info(self, video_list: list) -> str:
+        """
+        测试获取视频信息接口
+        :param video_list: 视频列表
+        :return:
+        """
+        url = dyapi.host + '/video_info'
+        resp = requests.post(url, data={'video_list': str(video_list)}).text
+        print('视频信息列表:', resp)
+        return resp
 
     def get_live_user(self, uid):
         """
@@ -1228,7 +1238,7 @@ if __name__ == '__main__':
     device = api.get_device()
 
     # ac_sign
-    api.get_ac_sign('https://www.douyin.com/user/MS4wLjABAAAA2Ixr52FdZXzowS37S8bhgGYUcruovygBNDqOtBxFfvI')
+    api.get_ac_sign('')
 
     # web版获取cookie
     cookie = api.get_web_cookie()
@@ -1237,7 +1247,7 @@ if __name__ == '__main__':
     vid = '7050046203945356579'
     page = 0
 
-    token = ''
+    token = '00470bbfeb49d95c2ca1e26ac4a1dd510f0384dbdf2f3665dd4bd0714bd8a76157a7058d65daa90d26694f0d385459aa4ab5929223fadc1d5d4c6eaec97cb70c4ede68a69a8853fa2a41b7018eedde0ec5ddd920f0d3e174de2cdccc94b4cfd0e140b-1.0.1'
     # api.get_qishui()
 
     # 获取粉丝列表示例
@@ -1280,6 +1290,8 @@ if __name__ == '__main__':
 
     # web获取视频信息
     # api.get_web_videoinfo(vid)
+    video_list = [7206592982118616324, 7180333041812819237, 7212918206074309899]
+    api.get_video_info(video_list)
 
     # 获取橱窗列表
     # api.get_shop_product('94409926892', page, token)
@@ -1304,7 +1316,7 @@ if __name__ == '__main__':
     # app用户搜索
     # api.get_user_search('哈士奇', page, token)
     # web用户搜索
-    api.web_user_search(keyword, cookie, "0")
+    # api.web_user_search(keyword, cookie, "0")
 
     # api.web_my_follower()
 
