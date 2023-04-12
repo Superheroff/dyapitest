@@ -24,11 +24,13 @@ https://www.douyin.com/robots.txt
 ## 2023.03.29
 - 这个数据太乱太长了建议不要取整段，用正则精简下`<script id="RENDER_DATA" type="application/json">(.*?)%22post%22%3A%7B%22(.*?)%2C%22_location`
 - 这样之后返回的内容要拼接一下，拼接头：`{"post":{"`
-- 推荐一个好用的json解析网站，可以快速定位json错误位置[jsonlint](https://jsonlint.com/)
+- [相关源码](https://github.com/Superheroff/dyapitest/blob/main/video_post.py)
+- 推荐一个好用的json解析网站，可以快速定位json错误位置[Jsonlint](https://jsonlint.com/)
 
 ## 2023.04.05
 **测试视频信息列表**
 - 使用flask包装接口并调用测试
+- [相关源码](https://github.com/Superheroff/dyapitest/blob/main/video_info.py)
 
 **接口说明**
 - GET：重定向至随机一个视频的源地址
@@ -47,6 +49,4 @@ http://api2.52jan.com/video_info?video_list=[7206592982118616324,718033304181281
 ```
 {"msg": "此接口已失效"}
 ```
-
-- [查看源码](https://github.com/Superheroff/dyapitest/blob/main/video_info.py)
 
