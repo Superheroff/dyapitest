@@ -55,6 +55,9 @@ http://api2.52jan.com/video_info?video_list=[7206592982118616324,718033304181281
 2. 拼接地址，此处又分高清和普通版本
 - 如何找到清晰度最高的地址呢
 1. 通过`dataSize`这个字段，数值越大视频越清晰
+- 最清晰的一般是在`video.play_addr_lowbr`或`video.play_addr_h264`里面
+- 文件最小的是在`video.play_addr_265`
+- 带水印的在`video.download_addr`，总之包含`download`的路径都是带水印的
 2. 保存数值最大的字段下的`file_id`的值，然后拼接url
 - 拼接示例
 1. 高清地址（81.4 MB）：`https://api-play-hl.amemv.com/aweme/v1/play/?video_id=v0200fg10000cgdcksjc77ucureni2j0&file_id=157e3967e85a461db2383bbee2d13889`
