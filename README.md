@@ -67,8 +67,8 @@ http://api2.52jan.com/video_info?video_list=[7206592982118616324,718033304181281
 **测试web用户粉丝接口**
 - 使用`playwright`执行一段js代码即可，如下所示
 - 你所需要掌握的知识
-  1. 如何使用`playwright`执行js代码
-  2. 如何使用`playwright`带cookie访问网页
+  - 如何使用`playwright`执行js代码
+  - 如何让`playwright`带cookie访问网页
 ```
 function queryData(url) {
      var p = new Promise(function(resolve,reject) {
