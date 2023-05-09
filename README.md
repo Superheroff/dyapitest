@@ -1,7 +1,7 @@
 # dyapitest
 - 抖音系api整理测试，仅供测试学习使用
 - 如有侵权请[联系我](https://www.app966.cn)删除
-- 请遵守robots协议
+- 请遵守[robots协议](https://baike.baidu.com/item/robots/5243374?fr=aladdin)
 ```
 https://www.douyin.com/robots.txt
 ```
