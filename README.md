@@ -73,7 +73,7 @@ http://api2.52jan.com/video_info?video_list=[7206592982118616324,718033304181281
 - 你所需要掌握的知识
   - 如何使用`playwright`执行js代码
   - 如何让`playwright`带cookie访问网页
-```
+```javascript
 function queryData(url) {
      var p = new Promise(function(resolve,reject) {
          var e={
