@@ -8,7 +8,9 @@ https://www.douyin.com/robots.txt
 ## 说一下抓包问题
 - [下载](https://www.douyin.com/downloadpage/app)最新版抖音app
 - 下载后先不急着安装，进入`aweme_douyinweb.apk\lib\arm64-v8a\`下删除`libsscronet.so`
+![](https://raw.githubusercontent.com/Superheroff/dyapitest/main/1.png)
 - 再安装，正常启动抓包即可
+![](https://raw.githubusercontent.com/Superheroff/dyapitest/main/QQ%E6%88%AA%E5%9B%BE20230701131805.png)
 
 ## 声明
 - 本人从不发掐头去尾的内容，发出来的代码都是可直接运行的，如果你不会使用或者各种报错说明你掌握的知识不够。
