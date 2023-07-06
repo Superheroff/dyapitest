@@ -6,11 +6,27 @@
 https://www.douyin.com/robots.txt
 ```
 ## 说一下抓包问题
+### 方案一：
+缺点：会闪退，经常闪退~所以就有了方案二
 - [下载](https://www.douyin.com/downloadpage/app)最新版抖音app
 - 下载后先不急着安装，进入`aweme_douyinweb.apk\lib\arm64-v8a\`下删除`libsscronet.so`
 ![](https://raw.githubusercontent.com/Superheroff/dyapitest/main/1.png)
 - 再安装，正常启动抓包即可
 ![](https://raw.githubusercontent.com/Superheroff/dyapitest/main/QQ%E6%88%AA%E5%9B%BE20230701131805.png)
+### 方案二：
+- [下载](https://github.com/Superheroff/dyapitest/blob/main/libsscronet.so)libsscronet.so，下载到模拟器的安装目录下
+- 准备好25.9 64位的抖音apk安装包
+- 把抖音安装包安装到模拟器中，模拟器配置好抓包
+- 进入模拟器安装目录下：`shift+单机右键`点击`在此处打开Powershell窗口`，执行下面命令
+```
+adb push libsscronet.so /sdcard
+adb shell
+su
+cd /sdcard
+mv libsscronet.so /data/data/com.ss.android.ugc.aweme/lib
+cd /data/data/com.ss.android.ugc.aweme/lib
+find libsscronet.so
+```
 
 ## 声明
 - 本人从不发掐头去尾的内容，发出来的代码都是可直接运行的，如果你不会使用或者各种报错说明你掌握的知识不够。
