@@ -29,9 +29,6 @@ find libsscronet.so
 ```
 - [加入群聊](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=Nz5UahnU10AdglUgpa_6MVmWOYrd1rcT&authKey=y%2BtD9TYxGQh1kj937yNl%2B2MkLmQsKgVu2MLqrb9Gh8O9Nl6mSRO0b7PmWHYz15Sy&noverify=0&group_code=916790180)可以获得打包好的apk
 
-## 声明
-- 本人从不发掐头去尾的内容，发出来的代码都是可直接运行的，如果你不会使用或者各种报错说明你掌握的知识不够。
-
 ## 2023.03.28
 **测试web获取用户作品信息**
 - 此接口今天升级了，安全性提高了
