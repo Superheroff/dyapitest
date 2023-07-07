@@ -1,10 +1,9 @@
+
 # dyapitest
-- 抖音系api整理测试，仅供测试学习使用
+- 本项目是字节系api整理测试，仅供测试学习使用
 - 如有侵权请[联系我](https://www.app966.cn)删除
-- 请遵守[robots协议](https://baike.baidu.com/item/robots/5243374?fr=aladdin)
-```
-https://www.douyin.com/robots.txt
-```
+- 请遵守[抖音](https://www.douyin.com/robots.txt)[robots协议](https://baike.baidu.com/item/robots/5243374?fr=aladdin)
+
 ## 说一下抓包问题
 ### 方案一：
 缺点：会闪退，经常闪退~所以就有了方案二
