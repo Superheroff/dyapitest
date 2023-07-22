@@ -20,7 +20,15 @@ class dyapi:
     # 主
     host = 'http://api2.52jan.com'
 
-    # proxies = {'http': '127.0.0.1:7890', 'https': '127.0.0.1:7890'}
+    proxy = {
+        'host': 'c912.kdltps.com:15818',
+        'user': 't18480610527722',
+        'password': 'ayx30xwb'
+    }
+    proxies = {
+        "http": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": proxy['user'], "pwd": proxy['password'],
+                                                        "proxy": proxy['host']}
+    }
 
     def __init__(self, cid):
         self.cid = cid
@@ -216,12 +224,6 @@ class dyapi:
             "passport-sdk-version": "20356",
             "sdk-version": "2",
             "User-Agent": "okhttp/3.10.0.1",
-            # "X-Ladon": "Fmwzchui1d9Bq4YebHART+PamP6awv5wq1ovcMlrm2Ugad0r",
-            # "X-Khronos": "1686900009",
-            # "X-Gorgon": "8404e04200056c703e652c97d023fd0577de3ae546915de0072d",
-            # "X-Medusa": "Kw2MZB9hGQgcf9b/zdmRAeG19ULZNGJF1QWJQlIBamjbj/Jvc4gOGDJHatwPrzkMg3XHeDG/D1HWp23rFtOEze91VQd1RsEa0oZb9JEbfJLPJNDQTvP+Yg7DAYpO1k5Q9CNldKbv6FuGuqfFBt8Llx8lvbu16yxbwExrxXIDpxetUkw9Y4p9jc5y1MFT222L9ex/DJ4jDpe4HGchME2XQT/ygJNHJ12MFMYk/sTRYbDCuzWFe2rqErJSAVREY53HHU1ovFgXB2YKLqghSk/ZD+5/9a70i8x5D85aJMxUa8U6BN5gG6l8+5/hc+9p/NHXX2WcIEj+zXxZ2uDCOZPO9vn/LDpzYM4UGKRDIKk4SstUKCLgRL8A7NmXbwqGmfl7FXM1fXserhP59EXBBryjUbjRoxlf/Q==",
-            # "X-Helios": "Jcqpen49rqhO8rTb/3E9G+N85U65yy4//vupPM33B6BaoQ6S",
-            # "X-Argus": "XdYCNeAU12qsWMY0anSNeqWBmM4FNPLHXe4HY3C0VK/rVajjGV6+S2hnYoODLJX3A9a9dHM4UouytekIw+D/CWb1izuwO9LADIV+ro/5WxZJBriWVODiRk7mSQJJZQ5uCtgeVmd8YmfubtAI/QKG0L+EkhVvblnRY5fO8JxSSsrhM51/nfC7vAZ1csVCJh7fBf8L43dM5M+60NtwYVbBjM36nKcq1Kd1DKRq9oZfqHn/Za6DUDwf1ejq7+qh615hennjTaZSrg8YHodkHgfHzOYy",
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Host": "aweme.snssdk.com",
             "Cookie": f"install_id={iid};",
@@ -230,10 +232,46 @@ class dyapi:
         headers.update(sig)
         print(headers)
         response = requests.post(url=url, headers=headers, data=data)
-        print("最新版搜索", response.text)
+        print("new搜索", response.text)
         return response.text
 
-    def get_comment(self, video_id, device_id, iid, page=None):
+    def get_userinfo(self, secUid):
+        """
+        获取用户信息
+        :param secUid:
+        :return:
+        """
+        url = dyapi.host + "/dyapi/get_userinfo"
+        ts = str(time.time()).split('.')[0]
+        sign = self.set_sign()
+        header = {
+            'cid': self.cid,
+            'timestamp': ts
+        }
+
+        ret = requests.post(url, data={"secUid": secUid, "sign": sign}, headers=header).text
+        print("获取用户信息", ret)
+        return ret
+
+    def get_comment_old(self, video_id):
+        """
+        获取视频评论
+        :param video_id:
+        :return:
+        """
+        url = dyapi.host + "/dyapi/get_comment"
+        ts = str(time.time()).split('.')[0]
+        sign = self.set_sign()
+        header = {
+            'cid': self.cid,
+            'timestamp': ts
+        }
+
+        ret = requests.post(url, data={"aweme_id": video_id, "page": "0", "sign": sign}, headers=header).json()
+        print("视频评论_old", ret)
+        return ret
+
+    def get_comment(self, video_id, device_id, iid, page=None, ttdt=''):
         """
         视频评论
         :param video_id:
@@ -269,7 +307,8 @@ class dyapi:
             'x-tt-store-region-src': 'did',
             'x-vc-bdturing-sdk-version': '3.6.1.cn',
             'user-agent': 'com.ss.android.ugc.aweme/250901 (Linux; U; Android 9; zh_CN; MI 9; Build/PQ3B.190801.06161913;tt-ok/3.12.13.1)',
-            "Cookie": f"install_id={iid}; "
+            "Cookie": f"install_id={iid}; ",
+            'x-tt-dt': ttdt
         }
 
         sig = self.get_xgorgon(url, '', '', 'max', headers)
@@ -549,26 +588,78 @@ class dyapi:
         :param cookie:
         :return:
         """
-        url = 'https://www.douyin.com/aweme/v1/web/locate/post/?device_platform=webapp&aid=6383&channel' \
-              '=channel_pc_web&sec_user_id=%s&max_cursor=0&locate_item_id=7215521171238931749&locate_item_cursor=1679816897000&locate_query' \
-              '=true&count=10&publish_video_strategy_type=2&pc_client_type=1&version_code=170400&version_name=17.4.0' \
-              '&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN&browser_platform=Win32' \
-              '&browser_name=Firefox&browser_version=111.0&browser_online=true&engine_name=Gecko&engine_version=109.0' \
-              '&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=&platform=PC' % sec_uid
+        url = f'https://www.douyin.com/aweme/v1/web/aweme/post/?device_platform=webapp&aid=6383&channel' \
+              f'=channel_pc_web&sec_user_id={sec_uid}&max_cursor' \
+              f'={page}&locate_query=false&show_live_replay_strategy=1&count=1&publish_video_strategy_type=2' \
+              f'&pc_client_type=1&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1536' \
+              f'&screen_height=864&browser_language=zh-CN&browser_platform=Win32&browser_name=Firefox&browser_version' \
+              f'=115.0&browser_online=true&engine_name=Gecko&engine_version=109.0&os_name=Windows&os_version=10' \
+              f'&cpu_core_num=8&device_memory=&platform=PC'
 
-        ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0'
+        ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
+        referer = f'https://www.douyin.com/'
 
-        sign = self.get_web_sign(url, 'https://www.douyin.com/', ua)
+        sign = self.get_web_sign(url, referer, ua)
         xbogus = self.get_web_xbogus(url, ua)
         url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
-            'User-Agent': self.__web_ua,
-            'referer': 'https://www.douyin.com/',
-            'cookie': cookie
+            'User-Agent': ua,
+            'Referer': referer,
+            'Cookie': cookie
         }
         resp = requests.get(url, headers=header).text
         print('web作品列表：', resp)
         return resp
+
+    def get_video(self, secUid, page="0", iid='', device_id=''):
+        """
+        获取作品列表
+        :param secUid:
+        :param page:
+        :param iid:
+        :param device_id:
+        :param ttdt:
+        :return:
+        """
+
+        url = f"https://api5-core-c-lf.amemv.com/aweme/v1/aweme/post/?publish_video_strategy_type=2&source=0" \
+              f"&user_avatar_shrink=96_96&video_cover_shrink=248_330&need_time_list=0&max_cursor={page}&sec_user_id" \
+              f"={secUid}&count=20&show_live_replay_strategy=1" \
+              f"&is_order_flow=0&page_from=2&location_permission=0&familiar_collects=0&page_scene=1" \
+              f"&post_serial_strategy=0&need_article=1&_rticket={round(time.time() * 1000)}" \
+              f"&mcc_mnc=46000&need_personal_recommend=1&ts={round(time.time())}&ac=wifi&aid=1128&appTheme=light" \
+              f"&app_name=aweme&app_type=normal&channel=update&cpu_support64=true&device_brand=Xiaomi&device_id" \
+              f"={device_id}&device_platform=android&device_type=MI+9&dpi=320&host_abi=arm64-v8a&iid" \
+              f"={iid}&is_android_pad=0&is_guest_mode=0&language=zh&manifest_version_code=250901" \
+              f"&minor_status=0&os=android&os_api=28&os_version=9&package=com.ss.android.ugc.aweme&resolution=900" \
+              f"*1600&ssmix=a&update_version_code=25909900&version_code=250900&version_name=25.9.0"
+
+        headers = {
+            'Host': 'api5-core-c-lf.amemv.com',
+            'Accept-Encoding': 'gzip, deflate, br, ttzip',
+            'passport-sdk-version': '2036851',
+            'sdk-version': '2',
+            'ttzip-version': '32782',
+            'X-SS-DP': '1128',
+            "activity_now_client": str(int(time.time() * 1000)),
+            "X-SS-REQ-TICKET": str(int(time.time() * 1000)),
+            'x-tt-request-tag': 's=0;p=0',
+            'x-tt-store-region': 'cn-jx',
+            'x-tt-store-region-src': 'did',
+            'x-vc-bdturing-sdk-version': '3.6.1.cn',
+            'user-agent': 'com.ss.android.ugc.aweme/250901 (Linux; U; Android 9; zh_CN; MI 9; Build/PQ3B.190801.06161913;tt-ok/3.12.13.1)',
+            # 'x-tt-dt': ttdt,
+            "X-Tt-Token": "0090e9070d88238e42336c3de32b0d9fab01d15b38e73d369d56440ae12f40059a673893d4b954ece8b30836b42f44e7e81e36019a313b94e6fc9f88df7ddbf6aa25dae2ecccfed26583b2a6ce6f16bc8c4ba95706a349e936ba62b6591e233330cbd-1.0.1"
+        }
+
+        sig = self.get_xgorgon(url, '', '', 'max', headers)
+        headers.update(sig)
+
+        response = requests.get(url, headers=headers)
+        print("作品列表", response.text)
+        # if len(response.json()['aweme_list']) == 0:
+        #     print(url)
+        return response
 
     def get_ac_sign(self, ac_nonce):
         """
@@ -633,7 +724,8 @@ class dyapi:
         }
         sign = self.set_sign()
         resp = requests.post(url, data={'sign': sign}, headers=header).json()
-        return resp['data'][0][0]
+        # print(resp)
+        return resp['data'][0]['cookie']
 
     def get_room_id(self, live_url):
         """
@@ -663,10 +755,54 @@ class dyapi:
         print('本api的sign', sign)
         return sign
 
+    def get_video_list(self, secUid, page=None, NewVid=None):
+        """
+        获取某人作品列表
+        NewVid=1：获取某人最新作品ID
+        NewVid=0：获取某人所有作品列表
+        :param secUid:
+        :param page:
+        :return:
+        """
+        if page is None:
+            page = '0'
+
+        if NewVid is None:
+            NewVid = '0'
+
+        uri = dyapi.host + '/dyapi/web/get_video_list'
+        ts = str(time.time()).split('.')[0]
+        sign = self.set_sign()
+        data = {"secUid": secUid, "page": page, "sign": sign, "NewVid": NewVid, "proxy": json.dumps(dyapi.proxy)}
+        ret = requests.post(uri, data=data, headers={'cid': self.cid, 'timestamp': ts})
+        if ret.status_code == 500:
+            print("代理失效了")
+        else:
+            print("作品列表", ret.text)
+        return ret
+
+    def get_verify(self):
+        """
+        获取s_v_web_id
+        :return:
+        """
+
+        uri = dyapi.host + '/dyapi/web/verify'
+        ts = str(time.time()).split('.')[0]
+        sign = self.set_sign()
+        data = {"sign": sign, "proxy": json.dumps(dyapi.proxy)}
+        ret = requests.post(uri, data=data, headers={'cid': self.cid, 'timestamp': ts})
+        if ret.status_code == 500:
+            print("代理失效了")
+        else:
+            print("s_v_web_id", ret.text)
+        return ret
+
 
 if __name__ == '__main__':
     api = dyapi('d9ba8ae07d955b83c3b04280f3dc5a4a')
     api.get_appkey()
+    # api.get_verify()
 
     # 通过直播链接转直播间id
     # live_url = 'https://live.douyin.com/158893494907'
@@ -683,14 +819,19 @@ if __name__ == '__main__':
     # api.get_ac_sign('')
 
     # web版获取cookie
-    cookie = api.get_web_cookie()
+    cookie: str = api.get_web_cookie()
     print('ret_cookie:', cookie)
+    cookie_list = cookie.split("; ")
+    del cookie_list[len(cookie_list) - 1]
+    cookie_dic = {}
+    for i in cookie_list:
+        cookie_dic[i.split('=')[0]] = i.split('=')[1]
+    print(cookie_dic)
 
-    vid = '7244717478532762936'
+    video_id = '7244717478532762936'
     page = 0
 
     token = '00470bbfeb49d95c2ca1e26ac4a1dd510f0384dbdf2f3665dd4bd0714bd8a76157a7058d65daa90d26694f0d385459aa4ab5929223fadc1d5d4c6eaec97cb70c4ede68a69a8853fa2a41b7018eedde0ec5ddd920f0d3e174de2cdccc94b4cfd0e140b-1.0.1'
-    # api.get_qishui()
 
     # 获取web作品列表
     # api.get_web_video('MS4wLjABAAAA2Ixr52FdZXzowS37S8bhgGYUcruovygBNDqOtBxFfvI', page, cookie)
@@ -698,10 +839,11 @@ if __name__ == '__main__':
     # 获取直播弹幕
     cursor = ''
     internalExt = ''
-    room_id = '7195168871676906277'
+    room_id = '7253038992566881024'
 
     device_id = device['data'][0]['device_id']
     iid = device['data'][0]['install_id']
+    ttdt = device['data'][0]['device_token']
     # for i in range(3):
     #     ret = api.get_live_barrage_v2(room_id=room_id, cursor=cursor, internal_ext=internalExt, cookie=cookie)
     #     # messages = api.get_live_barrage_v3(room_id=room_id, cursor=cursor, internal_ext=internalExt, iid=iid, device_id=device_id)
@@ -720,7 +862,12 @@ if __name__ == '__main__':
     # web获取视频信息
     # video_list = [7206592982118616324, 7180333041812819237, 7212918206074309899]
     # api.get_video_info(video_list)
+    # device_id = '4323692175176509'
+    # iid = '653566820232771'
     sec_uid = 'MS4wLjABAAAA9dd_xgKqu5ADzkYWr1GINkW5E8NRNCgaywN2RMCZbq3Jqu-rsvkJ6hHZ4WBxbgxJ'
+    # 获取作品列表
+    api.get_video_list(sec_uid, NewVid="1")
+    # api.get_video(sec_uid, page=str(page), iid=iid, device_id=device_id)
 
     # 获取web评论示例
     # api.get_web_comment(vid, 10)
@@ -745,4 +892,8 @@ if __name__ == '__main__':
 
     # 获取评论示例
     # device_id=4323692175176509 install_id=2184085302687243
-    api.get_comment(vid, device_id="4323692175176509", iid="2184085302687243", page='0')
+    # api.get_comment(video_id, device_id=device_id, iid=iid, page='0', ttdt=ttdt)
+    api.get_comment_old(video_id)
+
+    # 获取用户信息
+    api.get_userinfo(sec_uid)
