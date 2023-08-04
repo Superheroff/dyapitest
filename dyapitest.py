@@ -33,7 +33,7 @@ class dyapi:
     def __init__(self, cid):
         self.cid = cid
         self.array = {}
-        self.__web_ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+        self.__web_ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
         self.__appkey = ''
 
     def get_appkey(self):
@@ -501,21 +501,19 @@ class dyapi:
         print('web粉丝列表：', resp)
         return resp
 
-    def web_user_search(self, keyword, cookie, page) -> str:
+    def web_user_search(self, keyword, page) -> str:
         """
         web版搜索用户
         :param keyword: 搜索关键词
-        :param cookie: web
         :param page: 默认0
         :return:
         """
         url = 'https://www.douyin.com/aweme/v1/web/discover/search/?device_platform=webapp&aid=6383&channel' \
-              '=channel_pc_web&search_channel=aweme_user_web&keyword=%s&search_source=switch_tab&query_correct_type=1' \
-              '&is_filter_search=0&from_group_id=&offset=%s&count=20&search_id=&pc_client_type=1&version_code=170400' \
+              f'=channel_pc_web&search_channel=aweme_user_web&keyword={keyword}&search_source=switch_tab&query_correct_type' \
+              f'=1&is_filter_search=0&from_group_id=&offset={page}&count=10&pc_client_type=1&version_code=170400' \
               '&version_name=17.4.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh-CN' \
-              '&browser_platform=Win32&browser_name=Chrome&browser_version=110.0.0.0&browser_online=true&engine_name' \
-              '=Blink&engine_version=110.0.0.0&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=8&platform' \
-              '=PC&downlink=10&effective_type=4g&round_trip_time=50' % (keyword, page)
+              '&browser_platform=Win32&browser_name=Firefox&browser_version=115.0&browser_online=true&engine_name' \
+              '=Gecko&engine_version=109.0&os_name=Windows&os_version=10&cpu_core_num=8&device_memory=&platform=PC'
         ref = 'https://www.douyin.com/search/%s?source=switch_tab&type=user' % keyword
         # sign = self.get_web_sign(url, ref, self.__web_ua)
         xbogus = self.get_web_xbogus(url, self.__web_ua)
@@ -527,6 +525,33 @@ class dyapi:
         }
         resp = requests.get(url, headers=header).text
         print('web用户搜索列表：', resp)
+        return resp
+
+
+    def web_userinfo(self, secUid) -> str:
+        """
+        web版用户信息
+        :param secUid:
+        :return:
+        """
+        url = 'https://www.douyin.com/aweme/v1/web/user/profile/other/?device_platform=webapp&aid=6383&channel' \
+              '=channel_pc_web&publish_video_strategy_type=2&source=channel_pc_web&sec_user_id' \
+              f'={secUid}&pc_client_type=1' \
+              '&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1536&screen_height=864' \
+              '&browser_language=zh-CN&browser_platform=Win32&browser_name=Firefox&browser_version=115.0' \
+              '&browser_online=true&engine_name=Gecko&engine_version=109.0&os_name=Windows&os_version=10&cpu_core_num' \
+              '=8&device_memory=&platform=PC'
+        ref = 'https://www.douyin.com/user/' + secUid
+        # sign = self.get_web_sign(url, ref, self.__web_ua)
+        xbogus = self.get_web_xbogus(url, self.__web_ua)
+        url += '&X-Bogus=' + xbogus['xbogus']  # + '&_signature=' + sign['sign']
+        header = {
+            'User-Agent': self.__web_ua,
+            'referer': ref,
+            'Cookie': cookie
+        }
+        resp = requests.get(url, headers=header).text
+        print('web用户信息：', resp)
         return resp
 
     def web_my_follower(self) -> str:
@@ -864,9 +889,9 @@ if __name__ == '__main__':
     # api.get_video_info(video_list)
     # device_id = '4323692175176509'
     # iid = '653566820232771'
-    sec_uid = 'MS4wLjABAAAA9dd_xgKqu5ADzkYWr1GINkW5E8NRNCgaywN2RMCZbq3Jqu-rsvkJ6hHZ4WBxbgxJ'
+    sec_uid = 'MS4wLjABAAAAx85E5eHTZn5MfmvdN_9-bqSReegB2KjL5p5rsMkX4mE'
     # 获取作品列表
-    api.get_video_list(sec_uid, NewVid="1")
+    api.get_video_list(sec_uid, NewVid="0")
     # api.get_video(sec_uid, page=str(page), iid=iid, device_id=device_id)
 
     # 获取web评论示例
@@ -879,7 +904,7 @@ if __name__ == '__main__':
 
     keyword = urllib.parse.quote('哈士奇')
     # web用户搜索
-    # api.web_user_search(keyword, cookie, "0")
+    api.web_user_search(keyword, "0")
 
     # 获取自己的粉丝列表
     # api.web_my_follower()
@@ -896,4 +921,5 @@ if __name__ == '__main__':
     api.get_comment_old(video_id)
 
     # 获取用户信息
-    api.get_userinfo(sec_uid)
+    # api.get_userinfo(sec_uid)
+    api.web_userinfo(sec_uid)
