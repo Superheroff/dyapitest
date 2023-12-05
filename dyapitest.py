@@ -21,9 +21,9 @@ class dyapi:
     host = 'http://api2.52jan.com'
 
     proxy = {
-        'host': 'c912.kdltps.com:15818',
-        'user': 't18480610527722',
-        'password': 'ayx30xwb'
+        'host': 'e688.kdltps.com:15818',
+        'user': 't19759518838891',
+        'password': 'ftlnwbla'
     }
     proxies = {
         "http": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": proxy['user'], "pwd": proxy['password'],
@@ -121,9 +121,9 @@ class dyapi:
         self.array['ver'] = ver
         self.array['params'] = params
         self.array['headers'] = json.dumps(headers)
-        resp = requests.post(sign_url, data=self.array, headers=header).json()
-        print('xgorgon', resp)
-        return resp
+        resp = requests.post(sign_url, data=self.array, headers=header)
+        print('xgorgon', resp.text)
+        return resp.json()
 
     def get_ApiInfo(self):
         """
@@ -169,6 +169,79 @@ class dyapi:
         m.update(bytes(post_data))
         str_md5 = m.hexdigest()
         return str_md5.upper()
+
+    def commit_digg(self):
+        url = f"https://api26-normal.amemv.com/aweme/v1/commit/item/digg/?aweme_id=7246389437054176551&type=1&ts={round(time.time())}" \
+              f"&app_type=lite&os_api=25&device_platform=android&device_type=PEHM00&iid=741542873277920&ssmix=a" \
+              f"&manifest_version_code=9901804&dpi=320&version_code=9901804&app_name=aweme&cdid=263ef35a-96e5-440e" \
+              f"-9784-94967d8640eb&version_name=9.9.1804&device_id=3978505066922525&is_autoplay=true&resolution=720" \
+              f"*1280&os_version=7.1.1&language=zh&device_brand=OPPO&ac=wifi&update_version_code=9901804&aid=2955" \
+              f"&channel=carplay_xiaoai_2955&minor_status=0&_rticket={round(time.time() * 1000)}"
+        print(url)
+        headers = {
+            "activity_now_client": str(int(time.time() * 1000)),
+            "x-ss-req-ticket": str(int(time.time() * 1000)),
+            "x-vc-bdturing-sdk-version": "2.2.1.cn",
+            "passport-sdk-version": "20356",
+            "sdk-version": "2",
+            "User-Agent": "com.ss.android.ugc.aweme/9901804 (Linux; U; Android 7.1.1; zh_CN; PEHM00; Build/SKQ1.210216.001; Cronet/TTNetVersion:1117d956 2021-06-16 QuicVersion:6ad2ee95 2021-04-06)",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Host": "api26-normal.amemv.com",
+            "x-tt-token": "001419b1d6df7287814abf9c0e027ae54b027231612bff1c0be626b93b5cdabfc85a5907bc9a9fcaa3aad36e244179d50f81407eb802118b3d1de8649db56102788534b4146ca79a70102761f5724c8088431c6ede49d4d2050628f5ec726173ea159-1.0.1"
+        }
+        # sig = self.get_xgorgon(url, '', '', 'max', headers)
+        # headers.update(sig)
+        # print(headers)
+        response = requests.get(url=url, headers=headers)
+        print("commit_digg", response.text)
+        return response.text
+
+    def get_shop_product(self, uid):
+        """
+        获取橱窗列表
+        :param uid:
+        :return:
+        """
+        # ecom5-normal-lf.ecombdapi.com
+        proxy = {
+            "host": "q210.kdltps.com:15818",
+            "user": "t19759795155723",
+            "password": "3eox5mcw"
+        }
+        proxies = {
+            # "http": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": username, "pwd": password, "proxy": tunnel},
+            "https": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": proxy['user'], "pwd": proxy['password'],
+                                                             "proxy": proxy['host']}
+        }
+
+        uri = f"https://api3-normal-c.amemv.com/aweme/v1/shop/product/list/?sec_author_id" \
+              f"={uid}&target_tab_type=100&cursor=0&size=10" \
+              f"&is_first_enter=false" \
+              f"&iid=2966909673546948&device_id=2966909673542852&ac" \
+              f"=wifi&channel=update&aid=2329&app_name=aweme&version_code=150900&version_name=15.9.0&device_platform" \
+              f"=android&os=android&ssmix=a&device_type=MI+9&device_brand=Xiaomi&language=zh&os_api=28&os_version=9" \
+              f"&manifest_version_code=150901&resolution=900*1600&dpi=320&update_version_code=15909900&_rticket" \
+              f"={round(time.time() * 1000)}&package=com.ss.android.ugc.aweme&mcc_mnc=46000&cpu_support64=true&host_abi=arm64-v8a" \
+              f"&is_guest_mode=0&app_type=normal&minor_status=0&appTheme=light&need_personal_recommend=1" \
+              f"&is_android_pad=0&ts={round(time.time())}&md=0"
+
+        headers = {
+            'X-SS-REQ-TICKET': str(round(time.time() * 1000)),
+            "sdk-version": "1",
+            "X-SS-DP": "2329",
+            # "Host": "api5-normal-c-lf.amemv.com",
+            # "X-Tt-Token": "00ce4bfaa6a09c92e09b095040c34ceb9602b5978cf678b3c349f216e32529620188c2c9031d546131ff48317725e401ddbedebb054787f0f71d0776c317a7f01348b84b9899c3fa41f5b2046b11ea198aad41536eb24834fadca8c0fcf8c358a641c-1.0.1",
+            'User-Agent': 'com.ss.android.ugc.aweme.lite/150900 (Linux; U; Android 9; zh_CN; MI 9; Build/NMF26X; Cronet/TTNetVersion:a87ab8c7 2020-11-24 QuicVersion:47946d2a 2020-10-14)',
+            "Cookie": "store-region=cn-jx; ttreq=1$1430dbab38a934b2fa67d2b0d60d1c93fba83ca7; passport_csrf_token=59d6b08cd8db90cfe156c4bbdcdf4d1c; passport_csrf_token_default=59d6b08cd8db90cfe156c4bbdcdf4d1c; d_ticket=06fa9938e030782addd82051850bca62a49ad; multi_sids=1618070996524280%3A0a7fb4782a2469191a11260deb6600df; passport_assist_user=CkHH2OYUv87kxHaSmuMQmMDq36J_MlY3naYzGqLvWCxWLV4x-zXmKl4DzG9iH6bkcepBwIqt67IFHr3Lu_19DNyAnxpKCjwnbLZqWpCd-N1K2KpNCmpPMC5CAJn_Xh9UMmZYrh1GqwdLu7zaG-VXWQBMZ-smNSRbMLbvc_1nmSo5kYgQ95W_DRiJr9ZUIAEiAQOJCoLD; n_mh=EyEgyFxFI5fiy-d_iT660NAbFEw22sfOXLkhKXhtwCs; sid_guard=0a7fb4782a2469191a11260deb6600df%7C1697889700%7C5184000%7CWed%2C+20-Dec-2023+12%3A01%3A40+GMT; uid_tt=f5fb5c4e17d03a8814b6ab396d1d541a; uid_tt_ss=f5fb5c4e17d03a8814b6ab396d1d541a; sid_tt=0a7fb4782a2469191a11260deb6600df; sessionid=0a7fb4782a2469191a11260deb6600df; sessionid_ss=0a7fb4782a2469191a11260deb6600df; store-region-src=uid; odin_tt=9bb93ac2d9f7879f1194d87fb406a5f2bbca349dac5a9e6a9cc88463a3a8248cc92d8d0572764c03c31e2c43e3ef7b21b75478c2de47d0661d7cef44965cb46241374f234830f7a0773b5f5b0e0bffa5",
+        }
+        sig = self.get_xgorgon(uri, headers["Cookie"], '', 'max', headers)
+        headers.update(sig)
+        # headers["X-Gorgon"] = sig["xgorgon"]
+        # headers["X-Khronos"] = sig["xkhronos"]
+        # headers["X-SS-REQ-TICKET"] = sig["X-SS-REQ-TICKET"]
+        res = requests.get(uri, headers=headers, proxies=proxies).text
+        print("橱窗列表", res)
+        return res
 
     def get_keyword(self, device_id, iid, keyword, page):
         """
@@ -267,9 +340,73 @@ class dyapi:
             'timestamp': ts
         }
 
-        ret = requests.post(url, data={"aweme_id": video_id, "page": "0", "sign": sign}, headers=header).json()
+        ret = requests.post(url, data={"aweme_id": video_id, "page": "0", "sign": sign}, headers=header).text
         print("视频评论_old", ret)
         return ret
+
+    def get_search_user(self, keyword, page=None):
+        """
+        搜索用户
+        :param keyword:
+        :param page:
+        :return:
+        """
+        if page is None:
+            page = "0"
+        url = dyapi.host + "/dyapi/get_search_user"
+        ts = str(time.time()).split('.')[0]
+        sign = self.set_sign()
+        header = {
+            'cid': self.cid,
+            'timestamp': ts
+        }
+
+        ret = requests.post(url, data={"keyword": keyword, "page": page, "sign": sign}, headers=header).text
+        print("搜索用户", ret)
+        return ret
+
+
+    def get_comment_tv(self, video_id, page):
+        """
+        视频评论大屏版
+        :param video_id:
+        :return:
+        """
+
+        url = f"https://aweme.snssdk.com/aweme/v2/comment/list/?aweme_id={video_id}&cursor={page}&count=20&ts" \
+              f"={round(time.time())}&app_type=lite&manifest_version_code=9901804&_rticket={round(time.time()*1000)}&iid=2527117300473116" \
+              f"&channel=carplay_xiaoai_2955&device_type=MI+9&language=zh&resolution=900*1600&update_version_code" \
+              f"=9901804&cdid=49cb574c-fcba-4551-921c-a0db90b505d0&minor_status=0&os_api=28&dpi=320&ac=wifi&device_id" \
+              f"=4323692175176509&is_autoplay=true&os_version=9&version_code=9901804&app_name=aweme&version_name=9.9" \
+              f".1804&device_brand=Xiaomi&ssmix=a&device_platform=android&aid=2955"
+
+        headers = {
+            "Accept-Encoding": "gzip",
+            "X-SS-REQ-TICKET": str(round(time.time()*1000)),
+            # "x-bd-client-key": "8ab87422817c401fa7653ec288b7e8935679b16591897ac4bdd6780a60c925fe84609486196db2930052c33d23c14e2f7ff21463cb983c77898fe100b34a3cd8",
+            "x-bd-kmsv": "1",
+            "sdk-version": "2",
+            # "X-Tt-Token": "000a7fb4782a2469191a11260deb6600df0523b681b51ad799f7994e2c4750477410535119e798e8cedfe4c42a2281fc130ed34c3cf446951d579ad4d45db202a513377270e202e7cbe811385a3ec883c75fdf6d8c4c63de32e57d723b89899b818b4-1.0.1",
+            "passport-sdk-version": "30765",
+            "User-Agent": "com.ss.android.ugc.aweme/9901804 (Linux; U; Android 9; zh_CN; Build/PQ3B.190801.06161913;tt-ok/3.10.0.2)",
+            # "Cookie": "store-region=cn-jx; passport_csrf_token_default=59d6b08cd8db90cfe156c4bbdcdf4d1c; d_ticket=06fa9938e030782addd82051850bca62a49ad; multi_sids=1618070996524280%3A0a7fb4782a2469191a11260deb6600df; n_mh=EyEgyFxFI5fiy-d_iT660NAbFEw22sfOXLkhKXhtwCs; uid_tt=f5fb5c4e17d03a8814b6ab396d1d541a; sid_tt=0a7fb4782a2469191a11260deb6600df; sessionid=0a7fb4782a2469191a11260deb6600df; store-region-src=uid; install_id=2527117300473116; ttreq=1$0a82fc9ff3d1d9866773faca85a50628c353ac5e; odin_tt=61d30e26a676246f0228bd42297c9a027d2d878374291bb830373ee48e4d53b43adae6d0ba25977be51e1216e18fb83637fe825ce13055b4862727fd5e31bbe3b34f5a3cf17959ca30fd887dfcc0f3a7; sid_guard=0a7fb4782a2469191a11260deb6600df%7C1701155257%7C5184000%7CSat%2C+27-Jan-2024+07%3A07%3A37+GMT",
+            # "X-Ladon": "vuewPk86SMMdpZ4vctp33+BaxNGvf1M+y1uJmxCBcTtKIApl",
+            # "X-Khronos": "1701155261",
+            # "X-Argus": "BZS0A4Kx5eOagSSa2bXC02WhikbaPNW+tglL67zC/b4z5cfnlt2DYVT5hOM98TxG7bQmsHY2o6e7X8+Lwn9w1Q4cBHlusHK/ztZ/yyk/l60gnOvU35ipsD/RnvyeM40CQz5yAApYVdgg3GrHcCeiiVQrp5Nt5SeFuxIxs32wfNcSx63Ym7bjGSF9vN45ibMNy0XeXxCO54105DyfBsPISs4YY1qJoQ50zwYgZF20c4SBPFhzC2YlgKtfD0ky7UufEvCNkJr+fMMho99d86ycKmX6xYGXZ441e51cte3GO+H2HIbtOeDCZVoVcioGF1PL2g9zAEqVmefHDBB3e0XVE3+y7dL0nyr0wZsTqnpbd1TNuA==",
+            # "X-Gorgon": "0404a0d64001e8943480eb26ff46d004ffb30d78520814bf2138",
+            "Host": "aweme.snssdk.com",
+            "Connection": "Keep-Alive"
+        }
+
+        sig = self.get_xgorgon(url, '', '', '4x')
+        headers.update(sig)
+        print(headers)
+        # headers["X-Gorgon"] = sig["xgorgon"]
+        # headers["X-Khronos"] = sig["xkhronos"]
+        response = requests.get(url, headers=headers)
+        print("视频评论TV版", response.text)
+        return response
+
 
     def get_comment(self, video_id, device_id, iid, page=None, ttdt=''):
         """
@@ -461,7 +598,7 @@ class dyapi:
         url += '&X-Bogus=' + xbogus['xbogus'] + '&_signature=' + sign['sign']
         header = {
             'User-Agent': self.__web_ua,
-            'Cookie': ''
+            'Cookie': cookie
         }
         resp = requests.get(url, headers=header).text
         print('web评论列表：', resp)
@@ -527,7 +664,6 @@ class dyapi:
         print('web用户搜索列表：', resp)
         return resp
 
-
     def web_userinfo(self, secUid) -> str:
         """
         web版用户信息
@@ -541,6 +677,7 @@ class dyapi:
               '&browser_language=zh-CN&browser_platform=Win32&browser_name=Firefox&browser_version=115.0' \
               '&browser_online=true&engine_name=Gecko&engine_version=109.0&os_name=Windows&os_version=10&cpu_core_num' \
               '=8&device_memory=&platform=PC'
+        print(url)
         ref = 'https://www.douyin.com/user/' + secUid
         # sign = self.get_web_sign(url, ref, self.__web_ua)
         xbogus = self.get_web_xbogus(url, self.__web_ua)
@@ -548,7 +685,7 @@ class dyapi:
         header = {
             'User-Agent': self.__web_ua,
             'referer': ref,
-            'Cookie': cookie
+            'Cookie': "__ac_nonce=0656ad4a10082029dfa7b; __ac_signature=_02B4Z6wo00f014wbLqAAAIDAY6zpW2SGvUeMOwoAAIZ0ca; SEARCH_RESULT_LIST_TYPE=%22single%22; ttwid=1%7CA6bwBt4GYBLjliRmkwC_0IzlXbbFCo9eKHJ4QcALi6I%7C1701500065%7Cf8c9276d1b21dc493ba814502b8baa0c51bbfdcf0cb15be576c038b1da049087; home_can_add_dy_2_desktop=%220%22; passport_csrf_token=f525b5de6973b724f99a92f9b499db68; passport_csrf_token_default=f525b5de6973b724f99a92f9b499db68; IsDouyinActive=true; FORCE_LOGIN=%7B%22videoConsumedRemainSeconds%22%3A180%7D; msToken=lKxdXSDjwnruvSxWOjqgdLQsC18qgk1ZfkXZr5LrasIomA8nXuzjMi5LjbMm3ysPGRhS4jN32lhdLOit5r9n_RqxI4hcNdTT14FSTikn; msToken=lKxdXSDjwnruvSxWOjqgdLQsC18qgk1ZfkXZr5LrasIomA8nXuzjMi5LjbMm3ysPGRhS4jN32lhdLOit5r9n_RqxI4hcNdTT14FSTikn; volume_info=%7B%22isUserMute%22%3Afalse%2C%22isMute%22%3Afalse%2C%22volume%22%3A0.5%7D; count=1"
         }
         resp = requests.get(url, headers=header).text
         print('web用户信息：', resp)
@@ -674,7 +811,7 @@ class dyapi:
             'x-vc-bdturing-sdk-version': '3.6.1.cn',
             'user-agent': 'com.ss.android.ugc.aweme/250901 (Linux; U; Android 9; zh_CN; MI 9; Build/PQ3B.190801.06161913;tt-ok/3.12.13.1)',
             # 'x-tt-dt': ttdt,
-            "X-Tt-Token": "0090e9070d88238e42336c3de32b0d9fab01d15b38e73d369d56440ae12f40059a673893d4b954ece8b30836b42f44e7e81e36019a313b94e6fc9f88df7ddbf6aa25dae2ecccfed26583b2a6ce6f16bc8c4ba95706a349e936ba62b6591e233330cbd-1.0.1"
+            # "X-Tt-Token": "0090e9070d88238e42336c3de32b0d9fab01d15b38e73d369d56440ae12f40059a673893d4b954ece8b30836b42f44e7e81e36019a313b94e6fc9f88df7ddbf6aa25dae2ecccfed26583b2a6ce6f16bc8c4ba95706a349e936ba62b6591e233330cbd-1.0.1"
         }
 
         sig = self.get_xgorgon(url, '', '', 'max', headers)
@@ -711,7 +848,13 @@ class dyapi:
         :return:
         """
         url = dyapi.host + '/video_info'
-        resp = requests.post(url, data={'video_list': str(video_list)}).text
+        ts = str(time.time()).split('.')[0]
+        header = {
+            'cid': self.cid,
+            'timestamp': ts
+        }
+        sign = self.set_sign()
+        resp = requests.post(url, data={'video_list': str(video_list), 'sign': sign}, headers=header).text
         print('视频信息列表:', resp)
         return resp
 
@@ -749,7 +892,7 @@ class dyapi:
         }
         sign = self.set_sign()
         resp = requests.post(url, data={'sign': sign}, headers=header).json()
-        # print(resp)
+        print(resp)
         return resp['data'][0]['cookie']
 
     def get_room_id(self, live_url):
@@ -830,7 +973,7 @@ if __name__ == '__main__':
     # api.get_verify()
 
     # 通过直播链接转直播间id
-    # live_url = 'https://live.douyin.com/158893494907'
+    live_url = 'https://live.douyin.com/158893494907'
     # room_id = api.get_room_id(live_url)
     # print('room_id:', room_id)
 
@@ -842,18 +985,19 @@ if __name__ == '__main__':
 
     # ac_sign
     # api.get_ac_sign('')
+    # cookie = ''
 
     # web版获取cookie
     cookie: str = api.get_web_cookie()
     print('ret_cookie:', cookie)
-    cookie_list = cookie.split("; ")
-    del cookie_list[len(cookie_list) - 1]
-    cookie_dic = {}
-    for i in cookie_list:
-        cookie_dic[i.split('=')[0]] = i.split('=')[1]
-    print(cookie_dic)
+    # cookie_list = cookie.split("; ")
+    # del cookie_list[len(cookie_list) - 1]
+    # cookie_dic = {}
+    # for i in cookie_list:
+    #     cookie_dic[i.split('=')[0]] = i.split('=')[1]
+    # print(cookie_dic)
 
-    video_id = '7244717478532762936'
+    video_id = '7272717621634649385'
     page = 0
 
     token = '00470bbfeb49d95c2ca1e26ac4a1dd510f0384dbdf2f3665dd4bd0714bd8a76157a7058d65daa90d26694f0d385459aa4ab5929223fadc1d5d4c6eaec97cb70c4ede68a69a8853fa2a41b7018eedde0ec5ddd920f0d3e174de2cdccc94b4cfd0e140b-1.0.1'
@@ -891,11 +1035,13 @@ if __name__ == '__main__':
     # iid = '653566820232771'
     sec_uid = 'MS4wLjABAAAAx85E5eHTZn5MfmvdN_9-bqSReegB2KjL5p5rsMkX4mE'
     # 获取作品列表
-    api.get_video_list(sec_uid, NewVid="0")
+    # api.get_video_list(sec_uid, NewVid="0")
+    # api.get_shop_product('MS4wLjABAAAAU9dYHqMwYvVV9_pF479JEqAWPYxEGYjJcLU-T4GNqNk')
     # api.get_video(sec_uid, page=str(page), iid=iid, device_id=device_id)
 
     # 获取web评论示例
-    # api.get_web_comment(vid, 10)
+    # api.get_web_comment(video_id, 10)
+    # 00-5220704b0df5c600838333d527cf0468-5220704b0df5c600-01
 
     # 获取web粉丝列表
     # api.get_web_follower(sec_uid, str(time.time()))
@@ -904,7 +1050,11 @@ if __name__ == '__main__':
 
     keyword = urllib.parse.quote('哈士奇')
     # web用户搜索
-    api.web_user_search(keyword, "0")
+    # api.web_user_search(keyword, "0")
+    # api.commit_digg()
+
+    # 用户搜索
+    api.get_search_user(keyword, "0")
 
     # 获取自己的粉丝列表
     # api.web_my_follower()
@@ -917,9 +1067,10 @@ if __name__ == '__main__':
 
     # 获取评论示例
     # device_id=4323692175176509 install_id=2184085302687243
+    # api.get_comment_tv(video_id, page="0")
     # api.get_comment(video_id, device_id=device_id, iid=iid, page='0', ttdt=ttdt)
     api.get_comment_old(video_id)
 
     # 获取用户信息
     # api.get_userinfo(sec_uid)
-    api.web_userinfo(sec_uid)
+    # api.web_userinfo("MS4wLjABAAAA6tlGEQtDRjeFQT3n6yJeyR1CGxfT91UHw0QOFZbnH8c")
